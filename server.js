@@ -1,6 +1,7 @@
 const app = require('./app');
 const cloudinary = require("cloudinary");
 const mongoose = require('mongoose')
+const PORT = process.env.PORT || 3000
 
 const connectDataBase = require("./config/database");
 
@@ -19,6 +20,6 @@ cloudinary.config({
 //connecting to the database then with server
 connectDataBase().then(() => {
     app.listen(PORT, () => {
-        console.log(`server is working on port ${process.env.PORT}`)
+        console.log(`server is working on port ${PORT}`)
     })
 })
