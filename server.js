@@ -1,10 +1,8 @@
 const app = require('./app');
 const cloudinary = require("cloudinary");
+const mongoose = require('mongoose')
 
 const connectDataBase = require("./config/database");
-
-//connecting to the database
-connectDataBase();
 
 //config
 if(process.env.NODE_ENV!=="PRODUCTION"){
@@ -18,6 +16,9 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const server = app.listen(process.env.PORT, () => {
-    console.log(`server is working on port ${process.env.PORT}`)
+//connecting to the database then with server
+connectDataBase().then(() => {
+    app.listen(PORT, () => {
+        console.log(`server is working on port ${process.env.PORT}`)
+    })
 })
