@@ -3,7 +3,7 @@ const cloudinary = require("cloudinary");
 
 const connectDataBase = require("./config/database");
 
-//connecting to database
+//connecting to the database
 connectDataBase();
 
 //config
