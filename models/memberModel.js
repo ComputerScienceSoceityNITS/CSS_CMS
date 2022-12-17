@@ -30,7 +30,7 @@ const memberSchema = new mongoose.Schema({
     },
 
     year:{
-        type:Number,
+        type:String,
         required: [true, "Please Enter the year of the member"],
     },
 
