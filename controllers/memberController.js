@@ -87,7 +87,11 @@ exports.deleteMember = async (req, res, next) => {
 exports.getMembers = async (req, res) => {
     try {
         const regex1 = /Co-Head/
-        const members = await Member.find({ session: req.params.session, year: req.params.year });
+        let members = await Member.find({ session: req.params.session });
+
+        if (req.query.year !== undefined) {
+            members = members.filter((ele) => { return ele.year === req.query.year; })
+        }
 
         const devWing = members.filter((ele) => { return ele.role === "Dev-Wing"; })
         const cpWing = members.filter((ele) => { return ele.role === "CP-Wing"; })
