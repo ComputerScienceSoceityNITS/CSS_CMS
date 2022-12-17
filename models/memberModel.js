@@ -25,7 +25,7 @@ const memberSchema = new mongoose.Schema({
     },
 
     session:{
-        type:Number,
+        type: String,
         required: [true, "Please Enter the session of the member"],
     },
 
