@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.route("/member/new").post(isAuthenticatedUser, addMember)
 router.route("/member/:id").put(isAuthenticatedUser, updateMember).delete(isAuthenticatedUser, deleteMember)
-router.route("/members/:session/:year").get(getMembers)
+router.route("/members/:session").get(getMembers)
 
 module.exports = router;
