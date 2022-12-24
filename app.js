@@ -22,7 +22,7 @@ app.use(cookieparser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(fileUpload())
+app.use(fileUpload({useTempFiles:true}))
 
 const members = require("./routes/membersRoute.js");
 const events = require("./routes/eventsRoute.js");

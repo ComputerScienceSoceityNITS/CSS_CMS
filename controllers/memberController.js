@@ -4,9 +4,9 @@ const cloudinary = require("cloudinary");
 exports.addMember = async (req, res) => {
     try {
 
-        // const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-        //     folder: "avatars",
-        // });
+        const myCloud = await cloudinary.v2.uploader.upload(req.files.avatar.tempFilePath, {
+            folder: "avatars",
+        });
         const { name, role, session,year, socialMedia } = req.body;
         const member = await Member.create({
             name,
@@ -15,10 +15,10 @@ exports.addMember = async (req, res) => {
             year,
             socialMedia,
             avatar: {
-                public_id: "myCloud.public_id",
-                url: "myCloud.secure_url",
-                // public_id: myCloud.public_id,
-                // url: myCloud.secure_url,
+                // public_id: "myCloud.public_id",
+                // url: "myCloud.secure_url",
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
             }
         });
         res.status(201).json({
