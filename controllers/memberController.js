@@ -35,6 +35,8 @@ exports.addMember = async (req, res) => {
 //update Member
 exports.updateMember = async (req, res, next) => {
     try {
+
+        
         let member = await Member.findById(req.params.id);
         if (!member) {
             return res.status(500).json({
@@ -42,7 +44,33 @@ exports.updateMember = async (req, res, next) => {
                 message: "Member not found"
             })
         }
-        member = await Member.findByIdAndUpdate(req.params.id, req.body, {
+        
+        
+        if (req.files) {
+            const imageId = member.avatar.public_id;
+            console.log("on the way to delete");
+            await cloudinary.v2.uploader.destroy(imageId);
+            console.log("deleted");
+        }
+        
+        const bodyObj = req.body
+        
+        console.log(bodyObj);
+        
+        if (req.files) {
+            const myCloud = await cloudinary.v2.uploader.upload(req.files.avatar.tempFilePath, {
+                folder: "avatars",
+            });
+            bodyObj['avatar'] = {
+                // public_id: "myCloud.public_id",
+                // url: "myCloud.secure_url",
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
+            }
+        }
+
+
+        member = await Member.findByIdAndUpdate(req.params.id, bodyObj, {
             new: true,
             runValidators: true,
             useFindAndModify: false
