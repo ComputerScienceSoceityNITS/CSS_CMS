@@ -1,19 +1,22 @@
 const Member = require("../models/memberModel"); //schema
 const cloudinary = require("cloudinary");
+const { json } = require("body-parser");
 
 exports.addMember = async (req, res) => {
     try {
-
+        // console.log(req.body.socialMedia);
         const myCloud = await cloudinary.v2.uploader.upload(req.files.avatar.tempFilePath, {
             folder: "avatars",
         });
         const { name, role, session,year, socialMedia } = req.body;
+        const socialtmp = JSON.parse(socialMedia)
+        // console.log(socialtmp);
         const member = await Member.create({
             name,
             role,
             session,
             year,
-            socialMedia,
+            socialMedia: socialtmp,
             avatar: {
                 // public_id: "myCloud.public_id",
                 // url: "myCloud.secure_url",
@@ -25,6 +28,7 @@ exports.addMember = async (req, res) => {
             success: true,
             member
         });
+        // console.log(member);
 
     } catch (err) {
         res.send(err.message)
@@ -54,9 +58,10 @@ exports.updateMember = async (req, res, next) => {
         }
         
         const bodyObj = req.body
-        
-        console.log(bodyObj);
-        
+        // console.log(bodyObj);
+        const socialtmp = JSON.parse(bodyObj.socialMedia)
+        bodyObj['socialMedia'] = socialtmp
+        // console.log(bodyObj['socialMedia']);
         if (req.files) {
             const myCloud = await cloudinary.v2.uploader.upload(req.files.avatar.tempFilePath, {
                 folder: "avatars",
@@ -95,8 +100,8 @@ exports.deleteMember = async (req, res, next) => {
                 message: "Member not found"
             })
         }
-        if (user.avatar.public_id !== "") {
-            const imageId = user.avatar.public_id;
+        if (member.avatar.public_id !== "") {
+            const imageId = member.avatar.public_id;
             await cloudinary.v2.uploader.destroy(imageId);
         }
 
