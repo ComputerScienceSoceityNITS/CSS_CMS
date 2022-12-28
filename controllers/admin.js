@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 // No need to call this function, offical admin is already created
 exports.addAdmin = async (req, res) => {
     try {
-
+        // console.log(req.body);
         const admin = await Admin.create(req.body);
         res.status(201).json({
             success: true,
@@ -42,6 +42,8 @@ exports.isAuthenticatedUser = async (req, res, next) => {
 //login
 exports.login = async (req, res, next) => {
     try {
+
+        console.log(req.body);
         const { email, password } = req.body;
 
         //checkng if user has entered both email and password
@@ -94,8 +96,10 @@ sendToken = (user, ststusCode, res) => {
         expires: new Date(
             Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000,
         ),
-        httpOnly: true,
+        httpOnly: false,
     }
+
+    console.log(token);
 
     res.status(ststusCode).cookie("CSS_Website",token,options).json({
         success: true,
