@@ -20,7 +20,7 @@ const ALLOWED_ORIGINS = ['http://localhost:3000', process.env.CLIENT_URL, proces
 // enable CORS
 const corsOptions = {
   origin: ALLOWED_ORIGINS,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE","OPTIONS","HEAD"],
   allowedHeaders: [
     "Origin",
     "X-Requested-With",
