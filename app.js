@@ -19,8 +19,8 @@ const ALLOWED_ORIGINS = ['http://localhost:3000', process.env.CLIENT_URL, proces
 
 // enable CORS
 const corsOptions = {
-  origin: ALLOWED_ORIGINS,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE","OPTIONS","HEAD"],
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
   allowedHeaders: [
     "Origin",
     "X-Requested-With",
@@ -28,6 +28,7 @@ const corsOptions = {
     "Accept",
     "Authorization",
   ],
+  credentials: true,
 };
 
 app.options("*", cors(corsOptions));
