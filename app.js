@@ -16,23 +16,13 @@ app.use(express.urlencoded({ extended: false }))
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // enable CORS
-// const corsOptions = {
-//   origin: true,
-//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-//   allowedHeaders: [
-//     "Access-Control-Allow-Origin",
-//     "Access-Control-Allow-Methods",
-//     "Access-Control-Allow-Headers",
-//     "Origin",
-//     "X-Requested-With",
-//     "Content-Type",
-//     "Accept",
-//     "Authorization",
-//   ],
-//   credentials: true,
-// };
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    next();
+})
 
-// app.options("*", cors(corsOptions));
 app.use(cors());
 
 app.use(fileUpload({useTempFiles:true}))
