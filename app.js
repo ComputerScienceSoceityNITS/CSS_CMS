@@ -10,16 +10,15 @@ if(process.env.NODE_ENV!=="PRODUCTION"){
     require("dotenv").config({ path: "./config/.env" });
 }
 
-app.use(cookieparser())
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use(bodyParser.urlencoded({ extended: false }))
-
-const ALLOWED_ORIGINS = ['http://localhost:3000', process.env.CLIENT_URL, process.env.ADMIN_URL]
+const ALLOWED_ORIGINS = [
+  "http://localhost:3000",
+  process.env.CLIENT_URL,
+  process.env.ADMIN_URL,
+];
 
 // enable CORS
 const corsOptions = {
-  origin: "*",
+  origin: ALLOWED_ORIGINS,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
   allowedHeaders: [
     "Origin",
@@ -31,9 +30,13 @@ const corsOptions = {
   credentials: true,
 };
 
-app.options("*", cors(corsOptions));
+app.options(ALLOWED_ORIGINS, cors(corsOptions));
 app.use(cors(corsOptions));
 
+app.use(cookieparser())
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(fileUpload({useTempFiles:true}))
 
 const members = require("./routes/membersRoute.js");
