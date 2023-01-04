@@ -17,33 +17,21 @@ const ALLOWED_ORIGINS = [
 ];
 
 // enable CORS
-// const corsOptions = {
-//   origin: ALLOWED_ORIGINS,
-//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
-//   allowedHeaders: [
-//     "Origin",
-//     "X-Requested-With",
-//     "Content-Type",
-//     "Accept",
-//     "Authorization",
-//   ],
-//   credentials: true,
-// };
+const corsOptions = {
+  origin: ALLOWED_ORIGINS,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
+  allowedHeaders: [
+    "Origin",
+    "X-Requested-With",
+    "Content-Type",
+    "Accept",
+    "Authorization",
+  ],
+  credentials: true,
+};
 
-// app.options(ALLOWED_ORIGINS, cors(corsOptions));
-// app.use(cors(corsOptions));
-
-app.all("*", function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", process.env.ADMIN_URL);
-  res.header("Access-Control-Allow-Credentials", true);
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Content-Type,Content-Length, Authorization, Accept,X-Requested-With"
-  );
-  res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-
-  next();
-});
+app.options(ALLOWED_ORIGINS, cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use(cookieparser())
 app.use(express.json())
