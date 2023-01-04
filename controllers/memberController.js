@@ -1,30 +1,34 @@
 const Member = require("../models/memberModel"); //schema
 const cloudinary = require("cloudinary");
+const { json } = require("body-parser");
 
 exports.addMember = async (req, res) => {
     try {
-
-        // const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-        //     folder: "avatars",
-        // });
+        // console.log(req.body.socialMedia);
+        const myCloud = await cloudinary.v2.uploader.upload(req.files.avatar.tempFilePath, {
+            folder: "avatars",
+        });
         const { name, role, session,year, socialMedia } = req.body;
+        const socialtmp = JSON.parse(socialMedia)
+        // console.log(socialtmp);
         const member = await Member.create({
             name,
             role,
             session,
             year,
-            socialMedia,
+            socialMedia: socialtmp,
             avatar: {
-                public_id: "myCloud.public_id",
-                url: "myCloud.secure_url",
-                // public_id: myCloud.public_id,
-                // url: myCloud.secure_url,
+                // public_id: "myCloud.public_id",
+                // url: "myCloud.secure_url",
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
             }
         });
         res.status(201).json({
             success: true,
             member
         });
+        // console.log(member);
 
     } catch (err) {
         res.send(err.message)
@@ -35,6 +39,8 @@ exports.addMember = async (req, res) => {
 //update Member
 exports.updateMember = async (req, res, next) => {
     try {
+
+        
         let member = await Member.findById(req.params.id);
         if (!member) {
             return res.status(500).json({
@@ -42,7 +48,34 @@ exports.updateMember = async (req, res, next) => {
                 message: "Member not found"
             })
         }
-        member = await Member.findByIdAndUpdate(req.params.id, req.body, {
+        
+        
+        if (req.files) {
+            const imageId = member.avatar.public_id;
+            console.log("on the way to delete");
+            await cloudinary.v2.uploader.destroy(imageId);
+            console.log("deleted");
+        }
+        
+        const bodyObj = req.body
+        // console.log(bodyObj);
+        const socialtmp = JSON.parse(bodyObj.socialMedia)
+        bodyObj['socialMedia'] = socialtmp
+        // console.log(bodyObj['socialMedia']);
+        if (req.files) {
+            const myCloud = await cloudinary.v2.uploader.upload(req.files.avatar.tempFilePath, {
+                folder: "avatars",
+            });
+            bodyObj['avatar'] = {
+                // public_id: "myCloud.public_id",
+                // url: "myCloud.secure_url",
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url,
+            }
+        }
+
+
+        member = await Member.findByIdAndUpdate(req.params.id, bodyObj, {
             new: true,
             runValidators: true,
             useFindAndModify: false
@@ -67,8 +100,8 @@ exports.deleteMember = async (req, res, next) => {
                 message: "Member not found"
             })
         }
-        if (user.avatar.public_id !== "") {
-            const imageId = user.avatar.public_id;
+        if (member.avatar.public_id !== "") {
+            const imageId = member.avatar.public_id;
             await cloudinary.v2.uploader.destroy(imageId);
         }
 
