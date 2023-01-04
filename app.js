@@ -16,17 +16,26 @@ const allowlist = [
   process.env.CLIENT_URL,
   process.env.ADMIN_URL,
 ];
-const corsOptionsDelegate = function (req, callback) {
-  let corsOptions;
-  if (allowlist.indexOf(req.header("Origin")) !== -1) {
-    corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
-  } else {
-    corsOptions = { origin: false }; // disable CORS for this request
-  }
-  callback(null, corsOptions); // callback expects two parameters: error and options
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowlist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
+  allowedHeaders: [
+    "Origin",
+    "X-Requested-With",
+    "Content-Type",
+    "Accept",
+    "Authorization",
+  ],
+  credentials: true,
 };
 
-app.use(cors(corsOptionsDelegate));
+app.use(cors(corsOptions));
 
 app.use(cookieparser())
 app.use(express.json())
