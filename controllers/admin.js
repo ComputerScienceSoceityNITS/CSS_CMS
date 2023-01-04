@@ -43,7 +43,6 @@ exports.isAuthenticatedUser = async (req, res, next) => {
 exports.login = async (req, res, next) => {
     try {
 
-        console.log(req.body);
         const { email, password } = req.body;
 
         //checkng if user has entered both email and password
