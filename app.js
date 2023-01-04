@@ -17,12 +17,12 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 // enable CORS
 const corsOptions = {
-  origin: (origin, callback) => {
-    callback(null, true);
-  },
+  origin: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: [
     "Access-Control-Allow-Origin",
+    "Access-Control-Allow-Methods",
+    "Access-Control-Allow-Headers",
     "Origin",
     "X-Requested-With",
     "Content-Type",
