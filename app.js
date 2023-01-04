@@ -11,31 +11,40 @@ if(process.env.NODE_ENV!=="PRODUCTION"){
 }
 
 //cors
-const allowlist = [
-  "http://localhost:3000",
-  process.env.CLIENT_URL,
-  process.env.ADMIN_URL,
-];
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (allowlist.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
-  allowedHeaders: [
-    "Origin",
-    "X-Requested-With",
-    "Content-Type",
-    "Accept",
-    "Authorization",
-  ],
-  credentials: true,
-};
+// const allowlist = [
+//   "http://localhost:3000",
+//   process.env.CLIENT_URL,
+//   process.env.ADMIN_URL,
+// ];
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     if (allowlist.indexOf(origin) !== -1 || !origin) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
+//   allowedHeaders: [
+//     "Origin",
+//     "X-Requested-With",
+//     "Content-Type",
+//     "Accept",
+//     "Authorization",
+//   ],
+//   credentials: true,
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+
+// Enable CORS
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", process.env.ADMIN_URL);
+    res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    res.header("Access-Control-Allow-Credentials", true);
+    next();
+})
 
 app.use(cookieparser())
 app.use(express.json())
