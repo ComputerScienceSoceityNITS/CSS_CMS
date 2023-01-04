@@ -5,9 +5,15 @@ const { json } = require("body-parser");
 exports.addMember = async (req, res) => {
     try {
         // console.log(req.body.socialMedia);
-        const myCloud = await cloudinary.v2.uploader.upload(req.files.avatar.tempFilePath, {
-            folder: "avatars",
-        });
+        let myCloud;
+        if (req.files.avatar) {
+            myCloud = await cloudinary.v2.uploader.upload(
+              req.files.avatar.tempFilePath,
+              {
+                folder: "avatars",
+              }
+            );
+        }
         const { name, role, session,year, socialMedia } = req.body;
         const socialtmp = JSON.parse(socialMedia)
         // console.log(socialtmp);
