@@ -3,7 +3,7 @@ const fileUpload = require("express-fileupload");
 const cookieparser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const cookieEncrypter = require("cookie-encrypter");
+// const cookieEncrypter = require("cookie-encrypter");
 const app = express();
 
 //config
@@ -15,7 +15,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieparser(process.env.JWT_SECRET));
-app.use(cookieEncrypter(process.env.JWT_SECRET));
+// app.use(cookieEncrypter(process.env.JWT_SECRET));
 app.use(fileUpload({ useTempFiles: true }))
 
 // enable cors
