@@ -6,6 +6,7 @@
   "dependencies": {
     "body-parser": "^1.19.1",
     "cloudinary": "^1.28.1",
+    "cookie-encrypter": "^1.0.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^14.2.0",

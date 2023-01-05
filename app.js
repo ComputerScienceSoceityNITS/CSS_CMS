@@ -3,6 +3,7 @@ const fileUpload = require("express-fileupload");
 const cookieparser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const cookieEncrypter = require("cookie-encrypter");
 const app = express();
 
 //config
@@ -10,10 +11,11 @@ if(process.env.NODE_ENV!=="PRODUCTION"){
     require("dotenv").config({ path: "./config/.env" });
 }
 
-app.use(cookieparser())
 app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cookieparser(process.env.JWT_SECRET));
+app.use(cookieEncrypter(process.env.JWT_SECRET));
 app.use(fileUpload({ useTempFiles: true }))
 
 // enable cors
@@ -24,7 +26,6 @@ app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
 app.use((req, res, next) => {
   const { origin } = req.headers;
     const theOrigin = ALLOWED_ORIGINS.indexOf(origin) >= 0 ? origin : ALLOWED_ORIGINS[0];
-    console.log(theOrigin);
   res.header("Access-Control-Allow-Origin", theOrigin);
   res.header("Access-Control-Allow-Credentials", true);
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
