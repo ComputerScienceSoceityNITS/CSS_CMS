@@ -3,7 +3,6 @@ const fileUpload = require("express-fileupload");
 const cookieparser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-// const cookieEncrypter = require("cookie-encrypter");
 const app = express();
 
 //config
@@ -11,12 +10,11 @@ if(process.env.NODE_ENV!=="PRODUCTION"){
     require("dotenv").config({ path: "./config/.env" });
 }
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(cookieparser(process.env.JWT_SECRET));
-// app.use(cookieEncrypter(process.env.JWT_SECRET));
-app.use(fileUpload({ useTempFiles: true }))
+app.use(cookieparser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(fileUpload({ useTempFiles: true }));
 
 // enable cors
 const ALLOWED_ORIGINS = ["http://localhost:3000", process.env.CLIENT_URL, process.env.ADMIN_URL];
