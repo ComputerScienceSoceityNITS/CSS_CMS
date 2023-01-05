@@ -12,8 +12,8 @@ if(process.env.NODE_ENV!=="PRODUCTION"){
 }
 
 app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieparser(process.env.JWT_SECRET));
 // app.use(cookieEncrypter(process.env.JWT_SECRET));
 app.use(fileUpload({ useTempFiles: true }))
