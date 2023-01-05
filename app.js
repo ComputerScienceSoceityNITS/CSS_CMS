@@ -3,6 +3,9 @@ const fileUpload = require("express-fileupload");
 const cookieparser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const helmet = require("helmet");
+const xss = require("xss-clean");
+const mongoSanitize = require("express-mongo-sanitize");
 const app = express();
 
 //config
@@ -32,6 +35,13 @@ app.use((req, res, next) => {
 });
 
 app.options("*", cors());
+
+// set security HTTP headers
+app.use(helmet());
+
+// sanitize request data
+app.use(xss());
+app.use(mongoSanitize());
 
 const members = require("./routes/membersRoute.js");
 const events = require("./routes/eventsRoute.js");
