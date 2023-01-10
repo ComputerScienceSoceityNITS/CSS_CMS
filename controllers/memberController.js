@@ -133,7 +133,7 @@ exports.getMembers = async(req, res) => {
         const executiveWing = members.filter((ele) => { return ele.role === "Executive-Wing"; })
         const mlWing = members.filter((ele) => { return ele.role === "ML-Wing"; })
         const designWing = members.filter((ele) => { return ele.role === "Design-Wing"; })
-        const litreatureWing = members.filter((ele) => { return ele.role === "Literary-Wing"; })
+        const literaryWing = members.filter((ele) => { return ele.role === "Literary-Wing"; })
         const coHeads = members.filter((ele) => { return regex1.test(ele.role); })
 
         res.status(201).json({
@@ -143,7 +143,7 @@ exports.getMembers = async(req, res) => {
             executiveWing,
             mlWing,
             designWing,
-            litreatureWing,
+            literaryWing,
             coHeads,
             members
         });
