@@ -2,18 +2,17 @@ const Member = require("../models/memberModel"); //schema
 const cloudinary = require("cloudinary");
 const { json } = require("body-parser");
 
-exports.addMember = async (req, res) => {
+exports.addMember = async(req, res) => {
     try {
         // console.log(req.body.socialMedia);
         let myCloud = await cloudinary.v2.uploader.upload(
-          req.files.avatar.tempFilePath,
-          {
-            folder: "avatars",
-          }
+            req.files.avatar.tempFilePath, {
+                folder: "avatars",
+            }
         );
-        const { name, role, session,year, socialMedia } = req.body;
+        const { name, role, session, year, socialMedia } = req.body;
         const socialtmp = JSON.parse(socialMedia)
-        // console.log(socialtmp);
+            // console.log(socialtmp);
         const member = await Member.create({
             name,
             role,
@@ -40,10 +39,10 @@ exports.addMember = async (req, res) => {
 
 
 //update Member
-exports.updateMember = async (req, res, next) => {
+exports.updateMember = async(req, res, next) => {
     try {
 
-        
+
         let member = await Member.findById(req.params.id);
         if (!member) {
             return res.status(500).json({
@@ -51,20 +50,20 @@ exports.updateMember = async (req, res, next) => {
                 message: "Member not found"
             })
         }
-        
-        
+
+
         if (req.files) {
             const imageId = member.avatar.public_id;
             console.log("on the way to delete");
             await cloudinary.v2.uploader.destroy(imageId);
             console.log("deleted");
         }
-        
+
         const bodyObj = req.body
-        // console.log(bodyObj);
+            // console.log(bodyObj);
         const socialtmp = JSON.parse(bodyObj.socialMedia)
         bodyObj['socialMedia'] = socialtmp
-        // console.log(bodyObj['socialMedia']);
+            // console.log(bodyObj['socialMedia']);
         if (req.files) {
             const myCloud = await cloudinary.v2.uploader.upload(req.files.avatar.tempFilePath, {
                 folder: "avatars",
@@ -94,7 +93,7 @@ exports.updateMember = async (req, res, next) => {
 }
 
 //Delete Member
-exports.deleteMember = async (req, res, next) => {
+exports.deleteMember = async(req, res, next) => {
     try {
         const member = await Member.findById(req.params.id);
         if (!member) {
@@ -120,7 +119,7 @@ exports.deleteMember = async (req, res, next) => {
 }
 
 //get Members
-exports.getMembers = async (req, res) => {
+exports.getMembers = async(req, res) => {
     try {
         const regex1 = /Co-Head/
         let members = await Member.find({ session: req.params.session });
@@ -134,12 +133,19 @@ exports.getMembers = async (req, res) => {
         const executiveWing = members.filter((ele) => { return ele.role === "Executive-Wing"; })
         const mlWing = members.filter((ele) => { return ele.role === "ML-Wing"; })
         const designWing = members.filter((ele) => { return ele.role === "Design-Wing"; })
-        const litreatureWing = members.filter((ele) => { return ele.role === "Litreature-Wing"; })
+        const litreatureWing = members.filter((ele) => { return ele.role === "Literary-Wing"; })
         const coHeads = members.filter((ele) => { return regex1.test(ele.role); })
 
         res.status(201).json({
             success: true,
-            devWing, cpWing, executiveWing, mlWing, designWing, litreatureWing, coHeads, members
+            devWing,
+            cpWing,
+            executiveWing,
+            mlWing,
+            designWing,
+            litreatureWing,
+            coHeads,
+            members
         });
 
     } catch (err) {
