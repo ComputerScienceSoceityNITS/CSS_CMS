@@ -75,4 +75,22 @@ const login = async(req,res) => {
     }
 }
 
-module.exports={signUp};
+
+const authenticate =async(req,res,next) => {
+
+    try{
+
+        const email=await jwt.verify(req.body.user,'secret-1234567');
+        const user=await User.findOne({email});
+        req.user=user;
+        next();
+        
+    }
+    catch(e){
+
+        res.status(401).json({error: "Please Login!!!"});
+
+    }
+}
+
+module.exports={signUp,login,authenticate};
