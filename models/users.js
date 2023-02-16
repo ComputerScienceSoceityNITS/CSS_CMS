@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
 
 const userSchema=new mongoose.Schema({
 
@@ -7,9 +6,12 @@ const userSchema=new mongoose.Schema({
     email:{type:String,required:true,unique:true},
     scholarID:{type:Number,required:true,unique:true},
     password:{type:String,required:true},
-    codeForcesHandle:{type:String,required:true},
+    role:{type: String,required:true},
+    codeForcesHandle:{type:String,required:true,unique:true},
     gitHubHandle:{type:String}
 
 })
 
-module.exports={userSchema};
+const User = mongoose.model("user", userSchema);
+
+module.exports=User;

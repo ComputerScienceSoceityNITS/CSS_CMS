@@ -10,10 +10,11 @@ const signUp= async(req,res) => {
         const password=req.body.password;
         const email=req.body.email;
         const scholarID=req.body.scholarID;
+        const role=req.body.role;
         const codeForcesHandle=req.body.cfHandle;
         const gitHubHandle=req.body.ghHandle;
 
-        if(!name || !email || !password || !scholarID || !codeForcesHandle){
+        if(!name || !email || !password || !scholarID || !codeForcesHandle || !role){
             res.status(401).json({error: "Please Fill In All The Details"});
             return;
         }
@@ -27,7 +28,7 @@ const signUp= async(req,res) => {
             return;
         }
 
-        const user=await User({name,email,password,scholarID,codeForcesHandle,gitHubHandle:gitHubHandle?gitHubHandle:""});
+        const user=await User({name,email,password,scholarID,role,codeForcesHandle,gitHubHandle:gitHubHandle?gitHubHandle:""});
 
         res.status(201).json({success: "true"});
      
