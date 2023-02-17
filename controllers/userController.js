@@ -1,5 +1,6 @@
 const User=require('../models/users');
 var CryptoJS = require("crypto-js");
+const jwt=require('jsonwebtoken');
 
 // signup funtion
 const signUp= async(req,res) => {
@@ -19,7 +20,7 @@ const signUp= async(req,res) => {
             return;
         }
 
-        password=CryptoJS.AES.encrypt(password,'secret key 123').toString();
+        const epassword=CryptoJS.AES.encrypt(password,'secret key 123').toString();
 
         const existingUser=await User.findOne({$or:[{email,codeForcesHandle,scholarID}]});
 
@@ -28,13 +29,14 @@ const signUp= async(req,res) => {
             return;
         }
 
-        const user=await User({name,email,password,scholarID,role,codeForcesHandle,gitHubHandle:gitHubHandle?gitHubHandle:""});
+        const user=await User({name,email,password:epassword,scholarID,role,codeForcesHandle,gitHubHandle:gitHubHandle?gitHubHandle:""}).save();
+        
 
         res.status(201).json({success: "true"});
      
     }
-    catch{
-
+    catch(e){
+       
         res.status(401).json({error: "Something Went Wrong. Please Try Again!!!"});
 
     }
@@ -70,7 +72,7 @@ const login = async(req,res) => {
 
     }
     catch(e){
-
+        console.log(e)
         res.status(401).json({error: "Something Went Wrong. Please Try Again!!!"});
 
     }
