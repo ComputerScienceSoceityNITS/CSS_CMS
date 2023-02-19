@@ -1,11 +1,6 @@
 const express = require("express");
 // const { isAuthenticatedUser } = require("../controllers/admin");
-const {
-  addMember,
-  updateMember,
-  deleteMember,
-  getMembers,
-} = require("../controllers/memberController");
+const { addMember, updateMember, deleteMember, getMembers } = require("../controllers/memberController");
 const router = express.Router();
 
 router.route("/member/new").post(addMember);

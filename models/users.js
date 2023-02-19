@@ -5,11 +5,10 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   scholarID: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, required: true },
-  codeForcesHandle: { type: String, required: true, unique: true },
-  gitHubHandle: { type: String },
+  codeforcesHandle: { type: String },
+  githubHandle: { type: String },
 });
 
-const User = mongoose.model("user", userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;

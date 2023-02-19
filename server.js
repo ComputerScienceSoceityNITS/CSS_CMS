@@ -19,6 +19,6 @@ cloudinary.config({
 //connecting to the database then with server
 connectDataBase().then(() => {
   app.listen(process.env.PORT, () => {
-    console.log(`server is working...`);
+    console.log(`server is working on http://localhost:${process.env.PORT}`);
   });
 });

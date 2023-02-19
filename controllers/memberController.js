@@ -5,12 +5,9 @@ const { json } = require("body-parser");
 exports.addMember = async (req, res) => {
   try {
     // console.log(req.body.socialMedia);
-    let myCloud = await cloudinary.v2.uploader.upload(
-      req.files.avatar.tempFilePath,
-      {
-        folder: "avatars",
-      }
-    );
+    let myCloud = await cloudinary.v2.uploader.upload(req.files.avatar.tempFilePath, {
+      folder: "avatars",
+    });
     const { name, role, session, year, socialMedia } = req.body;
     const socialtmp = JSON.parse(socialMedia);
     // console.log(socialtmp);
@@ -61,12 +58,9 @@ exports.updateMember = async (req, res, next) => {
     bodyObj["socialMedia"] = socialtmp;
     // console.log(bodyObj['socialMedia']);
     if (req.files) {
-      const myCloud = await cloudinary.v2.uploader.upload(
-        req.files.avatar.tempFilePath,
-        {
-          folder: "avatars",
-        }
-      );
+      const myCloud = await cloudinary.v2.uploader.upload(req.files.avatar.tempFilePath, {
+        folder: "avatars",
+      });
       bodyObj["avatar"] = {
         // public_id: "myCloud.public_id",
         // url: "myCloud.secure_url",
