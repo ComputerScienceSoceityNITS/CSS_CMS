@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDataBase = async () => {
   try {
-    const conn = await mongoose.connect(process.env.DB_URI, {
+    const conn = await mongoose.connect("mongodb://localhost:27017/CSS", {
         useNewUrlParser: true, useUnifiedTopology: true,
         // useCreateIndex: true
     });
@@ -14,3 +14,4 @@ const connectDataBase = async () => {
 }
 
 module.exports=connectDataBase;
+  

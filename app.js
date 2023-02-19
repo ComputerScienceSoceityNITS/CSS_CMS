@@ -51,4 +51,10 @@ app.use("/api/admin", members);
 app.use("/api/admin", events);
 app.use("/api/admin", admin);
 
+
+//routes for general users
+const userRoute=require('./routes/userRoutes.js');
+
+app.use("/user", userRoute);
+ 
 module.exports = app;
