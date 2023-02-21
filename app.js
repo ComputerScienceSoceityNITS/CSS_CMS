@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const fileUpload = require("express-fileupload");
 const cookieparser = require("cookie-parser");
 const bodyParser = require("body-parser");
@@ -9,8 +9,8 @@ const mongoSanitize = require("express-mongo-sanitize");
 const app = express();
 
 //config
-if(process.env.NODE_ENV!=="PRODUCTION"){
-    require("dotenv").config({ path: "./config/.env" });
+if (process.env.NODE_ENV !== "PRODUCTION") {
+  require("dotenv").config({ path: "./config/.env" });
 }
 
 app.use(cookieparser());
@@ -26,7 +26,7 @@ app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
 
 app.use((req, res, next) => {
   const { origin } = req.headers;
-    const theOrigin = ALLOWED_ORIGINS.indexOf(origin) >= 0 ? origin : ALLOWED_ORIGINS[0];
+  const theOrigin = ALLOWED_ORIGINS.indexOf(origin) >= 0 ? origin : ALLOWED_ORIGINS[0];
   res.header("Access-Control-Allow-Origin", theOrigin);
   res.header("Access-Control-Allow-Credentials", true);
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -51,10 +51,11 @@ app.use("/api/admin", members);
 app.use("/api/admin", events);
 app.use("/api/admin", admin);
 
-
 //routes for general users
-const userRoute=require('./routes/userRoutes.js');
+const userRoute = require("./routes/userRoutes.js");
+const abacusRoute = require("./routes/abacusRoute.js");
 
 app.use("/user", userRoute);
- 
+app.use("/abacus", abacusRoute);
+
 module.exports = app;
