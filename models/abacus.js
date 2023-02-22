@@ -17,10 +17,6 @@ const abacusSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  startingTime: {
-    type: Date,
-    required: true
-  },
   eventType: {
     type: String,
     required: true,
