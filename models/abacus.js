@@ -17,6 +17,10 @@ const abacusSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  startingTime: {
+    type: Date,
+    required: true
+  },
   eventType: {
     type: String,
     required: true,
@@ -35,6 +39,9 @@ const abacusSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: "Team",
   },
+  coverPic: {
+    type: String
+  }
 });
 
 const Abacus = mongoose.model("Abacus", abacusSchema);
