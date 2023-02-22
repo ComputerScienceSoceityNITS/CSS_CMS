@@ -48,3 +48,20 @@ exports.register = async (req, res, next) => {
     });
   }
 };
+
+exports.createAbacusEvent= async(req,res) => {
+  try{
+    const {name,description,startDate,endDate,startingTime,eventType,minTeamSize,maxTeamSize,coverPic}=req.body;
+
+    if(!name || !description || !startDate || !endDate || !eventType || !minTeamSize || !maxTeamSize || !coverPic || !startingTime){
+      return res.status(400).json({status: "fail", message: "Please provide all the details"});
+    }
+
+    const event=await Abacus({name,description,startDate,endDate,startingTime,eventType,minTeamSize,maxTeamSize,coverPic}).save();
+
+    res.status(200).json({status: "success",message: "Event Succesfully Created", event: event});
+  }
+  catch(e){
+    res.status(500).json({status: "error", message:`something went wrong: ${e}`});
+  }
+}
