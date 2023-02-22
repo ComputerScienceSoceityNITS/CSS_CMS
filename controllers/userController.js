@@ -1,21 +1,18 @@
 const User = require("../models/users");
-const Crypto=require('node:crypto');
+const Crypto = require("node:crypto");
 const jwt = require("jsonwebtoken");
 
 //generate password hash function
-const generateHash= (password,salt=null) =>{
-    
-  if(salt==null){
-      const salt=Crypto.randomBytes(16).toString("hex");
-      const hash=Crypto.scryptSync(password,salt,64).toString("hex")+"$" +salt;
-      return hash;
-  }else{
-      const hash=Crypto.scryptSync(password,salt,64).toString("hex");
-      return hash;
+const generateHash = (password, salt = null) => {
+  if (salt == null) {
+    const salt = Crypto.randomBytes(16).toString("hex");
+    const hash = Crypto.scryptSync(password, salt, 64).toString("hex") + "$" + salt;
+    return hash;
+  } else {
+    const hash = Crypto.scryptSync(password, salt, 64).toString("hex");
+    return hash;
   }
- 
-}
-
+};
 
 // signup funtion
 const signUp = async (req, res) => {
@@ -71,14 +68,14 @@ const login = async (req, res) => {
       res.status(401).json({ error: "No Such User!!!" });
       return;
     }
-    
-    const hashedPassword=user.password
-    const [hash,salt]=hashedPassword.split("$")
 
-    const givenPassword=req.body.password
-    const givenHash=generateHash(givenPassword,salt);
+    const hashedPassword = user.password;
+    const [hash, salt] = hashedPassword.split("$");
 
-    if (givenHash==hash) {
+    const givenPassword = req.body.password;
+    const givenHash = generateHash(givenPassword, salt);
+
+    if (givenHash == hash) {
       const token = jwt.sign(
         {
           email: email,
