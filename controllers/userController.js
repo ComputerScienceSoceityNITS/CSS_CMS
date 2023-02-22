@@ -1,6 +1,21 @@
 const User = require("../models/users");
-const CryptoJS = require("crypto-js");
+const Crypto=require('node:crypto');
 const jwt = require("jsonwebtoken");
+
+//generate password hash function
+const generateHash= (password,salt=null) =>{
+    
+  if(salt==null){
+      const salt=Crypto.randomBytes(16).toString("hex");
+      const hash=Crypto.scryptSync(password,salt,64).toString("hex")+"$" +salt;
+      return hash;
+  }else{
+      const hash=Crypto.scryptSync(password,salt,64).toString("hex");
+      return hash;
+  }
+ 
+}
+
 
 // signup funtion
 const signUp = async (req, res) => {
@@ -12,8 +27,6 @@ const signUp = async (req, res) => {
       return;
     }
 
-    const encrypted_password = CryptoJS.AES.encrypt(password, process.env.CRYPTOJS_SECRET).toString();
-
     const existingUser = await User.findOne({
       $or: [{ email, scholarID, codeforcesHandle }],
     });
@@ -24,6 +37,8 @@ const signUp = async (req, res) => {
       });
       return;
     }
+
+    const encrypted_password = generateHash(password);
 
     const user = await User({
       name,
@@ -56,8 +71,14 @@ const login = async (req, res) => {
       res.status(401).json({ error: "No Such User!!!" });
       return;
     }
+    
+    const hashedPassword=user.password
+    const [hash,salt]=hashedPassword.split("$")
 
-    if (CryptoJS.AES.decrypt(user?.password, process.env.CRYPTOJS_SECRET).toString(CryptoJS.enc.Utf8) == password) {
+    const givenPassword=req.body.password
+    const givenHash=generateHash(givenPassword,salt);
+
+    if (givenHash==hash) {
       const token = jwt.sign(
         {
           email: email,
