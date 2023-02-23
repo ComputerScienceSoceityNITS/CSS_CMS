@@ -1,6 +1,7 @@
 const Abacus = require("../models/abacus");
 const Team = require("../models/teamModel");
 const User = require("../models/users");
+const cloudinary = require("cloudinary");
 
 exports.register = async (req, res, next) => {
   try {
@@ -51,9 +52,12 @@ exports.register = async (req, res, next) => {
 
 exports.createAbacusEvent = async (req, res) => {
   try {
-    const { name, description, startDate, endDate, eventType, minTeamSize, maxTeamSize, coverPic } = req.body;
+    const { name, description, startDate, endDate, eventType, minTeamSize, maxTeamSize } = req.body;
+    let myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
+      folder: "abacus",
+    });
 
-    if (!name || !description || !startDate || !endDate || !eventType || !minTeamSize || !maxTeamSize || !coverPic) {
+    if (!name || !description || !startDate || !endDate || !eventType || !minTeamSize || !maxTeamSize) {
       return res.status(400).json({ status: "fail", message: "Please provide all the details" });
     }
 
@@ -65,7 +69,10 @@ exports.createAbacusEvent = async (req, res) => {
       eventType,
       minTeamSize,
       maxTeamSize,
-      coverPic,
+      coverPic:{
+        public_id: myCloud.public_id,
+        url: myCloud.url
+      },
     }).save();
 
     res.status(200).json({ status: "success", message: "Event Succesfully Created", event: event });
@@ -83,7 +90,27 @@ exports.updateAbacusEvent = async (req, res) => {
       return res.status(400).json({ status: "fail", message: "No such event exists" });
     }
 
-    Object.assign(event, req.body);
+    if (req.files) {
+      const imageId = event.coverPic.public_id;
+      //console.log("on the way to delete");
+      await cloudinary.v2.uploader.destroy(imageId);
+      //console.log("deleted");
+    }
+
+    const newBodyObj=req.body;
+
+    if (req.files) {
+      const myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
+        folder: "abacus",
+      });
+      newBodyObj["coverPic"] = {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      };
+    }
+
+
+    Object.assign(event, newBodyObj);
     const updatedEvent = await event.save();
 
     res.status(200).json({ status: "success", message: "event successfully updated", event: updatedEvent });
