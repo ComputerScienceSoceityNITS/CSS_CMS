@@ -108,6 +108,11 @@ const login = async (req, res) => {
 
 const logout= async(req,res) => {
   try{
+    res.cookie("css_jwt_token", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    });
+
     res.clearCookie('css_jwt_token');
 
     res.status(200).json({
@@ -124,7 +129,6 @@ const authenticate = async (req, res, next) => {
   try {
     const token=req.headers.cookie.split("=")[1]
     const email = await jwt.verify(token, process.env.JWT_SECRET);
-    console.log(email);
     const user = await User.findOne({ email: email.email });
     req.user = user;
     return res.status(200).json({user: "true"});
