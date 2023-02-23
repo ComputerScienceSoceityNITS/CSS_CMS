@@ -54,8 +54,9 @@ app.use("/api/admin", admin);
 //routes for general users
 const userRoute = require("./routes/userRoutes.js");
 const abacusRoute = require("./routes/abacusRoute.js");
+const enigmaRoute = require("./routes/enigmaRoute");
 
 app.use("/user", userRoute);
 app.use("/abacus", abacusRoute);
-
+app.use("/enigma", enigmaRoute);
 module.exports = app;

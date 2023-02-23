@@ -36,8 +36,8 @@ const abacusSchema = new mongoose.Schema({
     ref: "Team",
   },
   coverPic: {
-    type: String
-  }
+    type: String,
+  },
 });
 
 const Abacus = mongoose.model("Abacus", abacusSchema);

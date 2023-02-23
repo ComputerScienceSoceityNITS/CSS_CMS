@@ -49,38 +49,45 @@ exports.register = async (req, res, next) => {
   }
 };
 
-exports.createAbacusEvent= async(req,res) => {
-  try{
-    const {name,description,startDate,endDate,eventType,minTeamSize,maxTeamSize,coverPic}=req.body;
+exports.createAbacusEvent = async (req, res) => {
+  try {
+    const { name, description, startDate, endDate, eventType, minTeamSize, maxTeamSize, coverPic } = req.body;
 
-    if(!name || !description || !startDate || !endDate || !eventType || !minTeamSize || !maxTeamSize || !coverPic){
-      return res.status(400).json({status: "fail", message: "Please provide all the details"});
+    if (!name || !description || !startDate || !endDate || !eventType || !minTeamSize || !maxTeamSize || !coverPic) {
+      return res.status(400).json({ status: "fail", message: "Please provide all the details" });
     }
 
-    const event=await Abacus({name,description,startDate,endDate,eventType,minTeamSize,maxTeamSize,coverPic}).save();
+    const event = await Abacus({
+      name,
+      description,
+      startDate,
+      endDate,
+      eventType,
+      minTeamSize,
+      maxTeamSize,
+      coverPic,
+    }).save();
 
-    res.status(200).json({status: "success",message: "Event Succesfully Created", event: event});
+    res.status(200).json({ status: "success", message: "Event Succesfully Created", event: event });
+  } catch (e) {
+    res.status(500).json({ status: "error", message: `something went wrong: ${e}` });
   }
-  catch(e){
-    res.status(500).json({status: "error", message:`something went wrong: ${e}`});
-  }
-}
+};
 
-exports.updateAbacusEvent= async(req,res) => {
-  try{
-    const id=req.body.id;
-    const event=await Abacus.findById(id);
+exports.updateAbacusEvent = async (req, res) => {
+  try {
+    const id = req.body.id;
+    const event = await Abacus.findById(id);
 
-    if(!event){
-      return res.status(400).json({status: "fail", message: "No such event exists"});
+    if (!event) {
+      return res.status(400).json({ status: "fail", message: "No such event exists" });
     }
 
-    Object.assign(event,req.body);
-    const updatedEvent=await event.save();
+    Object.assign(event, req.body);
+    const updatedEvent = await event.save();
 
-    res.status(200).json({status: "success", message: "event successfully updated",event: updatedEvent});
+    res.status(200).json({ status: "success", message: "event successfully updated", event: updatedEvent });
+  } catch (e) {
+    res.status(500).json({ status: "error", message: `Something went wrong : ${e}` });
   }
-  catch(e){
-    res.status(500).json({status: "error",message: `Something went wrong : ${e}`})
-  }
-}
+};
