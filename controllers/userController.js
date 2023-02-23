@@ -82,11 +82,23 @@ const login = async (req, res) => {
         },
         process.env.JWT_SECRET,
         {
-          expiresIn: "90d",
+          expiresIn: "7d",
         }
       );
-      res.status(200).json({ token: token, success: "true" });
-    } else {
+
+      const options = {
+        maxAge: 1000*60*60*24*7,
+        httpOnly: true,
+      };
+    
+      res.status(200).cookie("css_jwt_token", token, options).json({
+        success: true,
+        user,
+        token,
+        secure: false
+      });
+    }
+    else {
       res.status(401).json({ error: "Invalid Credentials" });
     }
   } catch (e) {
@@ -96,11 +108,16 @@ const login = async (req, res) => {
 
 const authenticate = async (req, res, next) => {
   try {
-    const email = await jwt.verify(req.body.email, process.env.JWT_SECRET);
-    const user = await User.findOne({ email });
+    const token=req.headers.cookie.split("=")[1]
+    const email = await jwt.verify(token, process.env.JWT_SECRET);
+    console.log(email);
+    const user = await User.findOne({ email: email.email });
     req.user = user;
-    next();
+    return res.status(200).json({user: "true"});
+    next(); 
+     
   } catch (e) {
+    console.log(e)
     res.status(401).json({ error: "Please Login!!!" });
   }
 };
