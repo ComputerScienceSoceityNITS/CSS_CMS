@@ -36,7 +36,14 @@ const abacusSchema = new mongoose.Schema({
     ref: "Team",
   },
   coverPic: {
-    type: String,
+    public_id: {
+      type: String,
+      //required: true,
+    },
+    url: {
+      type: String,
+     // required: true,
+    },
   },
 });
 
