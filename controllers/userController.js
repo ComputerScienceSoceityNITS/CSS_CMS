@@ -106,6 +106,20 @@ const login = async (req, res) => {
   }
 };
 
+const logout= async(req,res) => {
+  try{
+    res.clearCookie('css_jwt_token');
+
+    res.status(200).json({
+      success: true,
+      message: "Logged Out"
+    });
+  }
+  catch(e){
+    res.status(500).json({error: "Something Went Wrong"});
+  }
+}
+
 const authenticate = async (req, res, next) => {
   try {
     const token=req.headers.cookie.split("=")[1]
@@ -122,4 +136,4 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-module.exports = { signUp, login, authenticate };
+module.exports = { signUp, login, authenticate, logout };
