@@ -42,7 +42,7 @@ const abacusSchema = new mongoose.Schema({
     },
     url: {
       type: String,
-     // required: true,
+      // required: true,
     },
   },
 });

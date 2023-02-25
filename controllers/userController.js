@@ -87,18 +87,17 @@ const login = async (req, res) => {
       );
 
       const options = {
-        maxAge: 1000*60*60*24*7,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
         httpOnly: true,
       };
-    
+
       res.status(200).cookie("css_jwt_token", token, options).json({
         success: true,
         user,
         token,
-        secure: false
+        secure: false,
       });
-    }
-    else {
+    } else {
       res.status(401).json({ error: "Invalid Credentials" });
     }
   } catch (e) {
@@ -106,31 +105,28 @@ const login = async (req, res) => {
   }
 };
 
-const logout= async(req,res) => {
-  try{
-   
-    res.clearCookie('css_jwt_token');
+const logout = async (req, res) => {
+  try {
+    res.clearCookie("css_jwt_token");
 
     res.status(200).json({
       success: true,
-      message: "Logged Out"
+      message: "Logged Out",
     });
+  } catch (e) {
+    res.status(500).json({ error: "Something Went Wrong" });
   }
-  catch(e){
-    res.status(500).json({error: "Something Went Wrong"});
-  }
-}
+};
 
 const authenticate = async (req, res, next) => {
   try {
-    const token=req.headers.cookie.split("=")[1]
+    const token = req.headers.cookie.split("=")[1];
     const email = await jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne({ email: email.email });
     req.user = user;
-    next(); 
-     
+    next();
   } catch (e) {
-    console.log(e)
+    console.log(e);
     res.status(401).json({ error: "Please Login!!!" });
   }
 };
