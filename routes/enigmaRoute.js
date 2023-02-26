@@ -1,7 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const { enigmaRegister } = require("../controllers/enigmaController");
+const {
+  getCodeforcesHandlers,
+  getAllEnigmas,
+  createEnigma,
+  updateEnigma,
+  deleteEnigma,
+} = require("../controllers/enigmaController");
 
-router.post("/Register", enigmaRegister);
-
+router.get("/cfID", getCodeforcesHandlers);
+router.get("/getAllEnigmas", getAllEnigmas);
+router.post("/createEnigma", createEnigma);
+router.post("/updateEnigma", updateEnigma);
+router.delete("/deleteEnigma", deleteEnigma);
+//router.route("/deleteEnigma").delete(deleteEnigma);
 module.exports = router;

@@ -69,9 +69,9 @@ exports.createAbacusEvent = async (req, res) => {
       eventType,
       minTeamSize,
       maxTeamSize,
-      coverPic:{
+      coverPic: {
         public_id: myCloud.public_id,
-        url: myCloud.url
+        url: myCloud.url,
       },
     }).save();
 
@@ -97,7 +97,7 @@ exports.updateAbacusEvent = async (req, res) => {
       //console.log("deleted");
     }
 
-    const newBodyObj=req.body;
+    const newBodyObj = req.body;
 
     if (req.files) {
       const myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
@@ -108,7 +108,6 @@ exports.updateAbacusEvent = async (req, res) => {
         url: myCloud.secure_url,
       };
     }
-
 
     Object.assign(event, newBodyObj);
     const updatedEvent = await event.save();

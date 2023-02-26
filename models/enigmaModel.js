@@ -13,14 +13,6 @@ const enigmaSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  participants: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: "User",
-  },
-  winners: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: "User",
-  },
 });
 
 const Enigma = mongoose.model("Enigma", enigmaSchema);
