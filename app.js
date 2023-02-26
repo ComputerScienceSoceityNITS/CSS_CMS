@@ -44,11 +44,9 @@ app.use(xss());
 app.use(mongoSanitize());
 
 const members = require("./routes/membersRoute.js");
-const events = require("./routes/eventsRoute.js");
 const admin = require("./routes/adminRoute.js");
 
 app.use("/api/admin", members);
-app.use("/api/admin", events);
 app.use("/api/admin", admin);
 
 //routes for general users
