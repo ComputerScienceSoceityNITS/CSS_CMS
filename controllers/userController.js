@@ -20,19 +20,27 @@ const signUp = async (req, res) => {
     const { name, password, email, scholarID, codeforcesHandle, githubHandle } = req.body;
 
     if (!name || !email || !password || !scholarID) {
-      res.status(401).json({ error: "Please Fill In All The Details" });
-      return;
+      return res.status(401).json({
+        status: "fail",
+        message: "please fill in all the details",
+      });
     }
 
-    const existingUser = await User.findOne({
-      $or: [{ email, scholarID, codeforcesHandle }],
-    });
+    const query = User.findOne();
+    query.or([
+      { email: email },
+      { scholarID: scholarID },
+      {
+        codeforcesHandle: codeforcesHandle,
+      },
+    ]);
+    const existingUser = await query;
 
     if (existingUser) {
-      res.status(401).json({
-        error: "User With Same Email Or ScholarID or Codeforces Handle already Exists!!!",
+      return res.status(401).json({
+        status: "fail",
+        message: "user with same email / scholarID / codeforces handle already exists",
       });
-      return;
     }
 
     const encrypted_password = generateHash(password);
@@ -46,10 +54,16 @@ const signUp = async (req, res) => {
       githubHandle: githubHandle || null,
     }).save();
 
-    res.status(201).json({ success: "true" });
+    res.status(201).json({
+      status: "success",
+      user: user,
+    });
   } catch (e) {
     console.log(e);
-    res.status(401).json({ error: "Something Went Wrong. Please Try Again!!!" });
+    res.status(401).json({
+      status: "error",
+      message: `something went wrong : ${e.name}`,
+    });
   }
 };
 
