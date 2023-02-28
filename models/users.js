@@ -7,8 +7,13 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   codeforcesHandle: { type: String },
   githubHandle: { type: String },
-  registeredEvents: {
+  registeredAbacusEvents: {
     type: [mongoose.Schema.Types.ObjectId],
+    ref: "Abacus",
+  },
+  registeredEnigmas: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Enigma",
   },
 });
 
