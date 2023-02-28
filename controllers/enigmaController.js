@@ -1,15 +1,16 @@
 const Users = require("../models/users");
-const enigmaModel = require("../models/enigmaModel");
+const Enigma = require("../models/enigmaModel");
 
-exports.getCodeforcesHandlers = async (req, res, next) => {
+exports.getCodeforcesHandles = async (req, res, next) => {
   try {
-    let allUsers = await Users.find();
-    const cfIds = allUsers.filter((ele) => {
-      return ele.codeforcesHandle !== null;
-    });
+    const users = await Users.find({
+      codeforcesHandle: {
+        $ne: null,
+      },
+    }).select("name scholarID codeforcesHandle");
     res.status(201).json({
-      success: true,
-      cfIds,
+      status: "success",
+      users: users,
     });
   } catch (err) {
     res.send(err.message);
@@ -18,38 +19,49 @@ exports.getCodeforcesHandlers = async (req, res, next) => {
 
 exports.getAllEnigmas = async (req, res, next) => {
   try {
-    const allEnigmas = await enigmaModel.find();
+    const enigmas = await Enigma.find();
     res.status(201).json({
-      success: true,
-      allEnigmas,
+      status: "success",
+      enigmas,
     });
   } catch (err) {
-    res.send(err.message);
+    console.log(err);
+    res.status(500).json({
+      status: "error",
+      message: `something went wrong: ${err.name}`,
+    });
   }
 };
 
 exports.createEnigma = async (req, res, next) => {
   try {
-    const { cfContestLink, startDate, endDate } = req.body;
-    if (!cfContestLink || !startDate || !endDate) {
+    const { cfContestLink, start, durationInHrs, questionSetters, questionTesters } = req.body;
+
+    if (!(cfContestLink && start && durationInHrs)) {
       return res.status(400).json({ status: "fail", message: "Please provide all the details" });
     }
 
-    const event = await enigmaModel({
+    const startDate = new Date(start);
+
+    const enigma = await Enigma({
       cfContestLink,
-      startDate,
-      endDate,
+      start: startDate,
+      durationInHrs,
+      questionSetters: questionSetters || [],
+      questionTesters: questionTesters || [],
     }).save();
 
-    res.status(200).json({ status: "success", message: "Enigma Succesfully Created", event: event });
+    res.status(200).json({ status: "success", message: "Enigma Succesfully Created", enigma: enigma });
   } catch (e) {
-    res.status(500).json({ status: "error", message: `something went wrong: ${e}` });
+    console.log(e);
+    res.status(500).json({ status: "error", message: `something went wrong: ${e.name}` });
   }
 };
 
 exports.updateEnigma = async (req, res) => {
   try {
-    const enigma = await enigmaModel.findById(req.body.id);
+    const enigma_id = req.params.enigma_id;
+    const enigma = await Enigma.findById(enigma_id);
 
     if (!enigma) {
       return res.status(400).json({ status: "fail", message: "No such enigma exists" });
@@ -66,7 +78,8 @@ exports.updateEnigma = async (req, res) => {
 
 exports.deleteEnigma = async (req, res, next) => {
   try {
-    const enigma = await enigmaModel.findById(req.body.id);
+    const enigma_id = req.params.enigma_id;
+    const enigma = await Enigma.findById(enigma_id);
     if (!enigma) {
       return res.status(500).json({
         success: false,

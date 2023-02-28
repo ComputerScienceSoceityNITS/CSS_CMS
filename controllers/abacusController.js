@@ -136,18 +136,19 @@ exports.createAbacusEvent = async (req, res) => {
 
 exports.updateAbacusEvent = async (req, res) => {
   try {
-    const id = req.body.id;
+    const id = req.params.event_id;
     const event = await Abacus.findById(id);
 
     if (!event) {
-      return res.status(400).json({ status: "fail", message: "No such event exists" });
+      return res.status(400).json({
+        status: "fail",
+        message: "No such event exists",
+      });
     }
 
     if (req.files) {
       const imageId = event.coverPic.public_id;
-      //console.log("on the way to delete");
       await cloudinary.v2.uploader.destroy(imageId);
-      //console.log("deleted");
     }
 
     const newBodyObj = req.body;

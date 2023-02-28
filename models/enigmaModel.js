@@ -4,14 +4,35 @@ const enigmaSchema = new mongoose.Schema({
   cfContestLink: {
     type: String,
     required: true,
+    unique: true,
   },
-  startDate: {
+  start: {
     type: Date,
+    unique: true,
     required: true,
   },
-  endDate: {
-    type: Date,
+  durationInHrs: {
+    type: Number,
     required: true,
+    default: 3,
+  },
+  questionSetters: {
+    type: [String],
+    default: [],
+  },
+  questionTesters: {
+    type: [String],
+    default: [],
+  },
+  participants: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: [],
+  },
+  winners: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: [],
   },
 });
 
