@@ -23,13 +23,25 @@ A headless CMS for CSS Website and App.
 - delete `/api/admin/member/:id` deleteMember
 - Get `/api/admin/members/:batch` all members of the batch
 
-### Route for events
+### Route for Users
 
-- Get `/api/admin/events` all events
-- Post `/api/admin/event/new` create event
-- Get `/api/admin/event/:id` get event details
-- Put `/api/admin/event/:id` update event details
-- Delete `/api/admin/event/:id` delete event details
+- Post `/api/user/signup` register/signup user
+- Post `/api/user/login` login user
+- Get `/api/user/logout` logout user
+
+### Route for Abacus Events
+
+- Get `/api/abacus/` get all abacus events
+- Post `/api/abacus/register/:event_id` register for event
+- Post `/api/abacus/create` create event
+- Post `/api/abacus/update` update event
+
+### Route for Enigma Events
+
+- Get `/api/enigma` get details on all enigmas
+- Post `/api/enigma` create enigma
+- Patch `/api/enigma/:enigma_id` update enigma
+- Delete `/api/enigma/:enigma_id` delete enigma
 
 **Installation**
 

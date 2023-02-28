@@ -10,16 +10,19 @@ const abacusSchema = new mongoose.Schema({
     required: true,
   },
   startDate: {
-    type: Date,
+    type: String,
     required: true,
   },
   endDate: {
-    type: Date,
+    type: String,
     required: true,
   },
   eventType: {
     type: String,
     required: true,
+  },
+  participants: {
+    type: [String],
   },
   teams: {
     type: [mongoose.Schema.Types.ObjectId],
@@ -38,11 +41,9 @@ const abacusSchema = new mongoose.Schema({
   coverPic: {
     public_id: {
       type: String,
-      //required: true,
     },
     url: {
       type: String,
-      // required: true,
     },
   },
 });

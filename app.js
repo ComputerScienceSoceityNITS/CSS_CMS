@@ -44,11 +44,9 @@ app.use(xss());
 app.use(mongoSanitize());
 
 const members = require("./routes/membersRoute.js");
-const events = require("./routes/eventsRoute.js");
 const admin = require("./routes/adminRoute.js");
 
 app.use("/api/admin", members);
-app.use("/api/admin", events);
 app.use("/api/admin", admin);
 
 //routes for general users
@@ -56,7 +54,7 @@ const userRoute = require("./routes/userRoutes.js");
 const abacusRoute = require("./routes/abacusRoute.js");
 const enigmaRoute = require("./routes/enigmaRoute");
 
-app.use("/user", userRoute);
-app.use("/abacus", abacusRoute);
-app.use("/enigma", enigmaRoute);
+app.use("/api/user", userRoute);
+app.use("/api/abacus", abacusRoute);
+app.use("/api/enigma", enigmaRoute);
 module.exports = app;

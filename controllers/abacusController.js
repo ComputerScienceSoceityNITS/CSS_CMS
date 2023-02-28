@@ -3,10 +3,27 @@ const Team = require("../models/teamModel");
 const User = require("../models/users");
 const cloudinary = require("cloudinary");
 
+exports.getAllAbacusEvents = async (req, res, next) => {
+  try {
+    const abacusEvents = await Abacus.find();
+    return res.status(201).json({
+      status: "success",
+      events: abacusEvents,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      status: "error",
+      message: `something went wrong : ${err.name}`,
+    });
+  }
+};
+
 exports.register = async (req, res, next) => {
   try {
     const event_id = req.params.event_id;
     const event = await Abacus.findById(event_id);
+    const preregisteredScholarIDs = event.participants;
 
     if (!event) {
       return res.status(404).json({
@@ -24,17 +41,37 @@ exports.register = async (req, res, next) => {
       });
     }
 
+    const newlyregisteredScholarIDs = [];
     const memberIDs = [];
 
     for (let scholarID of memberScholarIDs) {
+      scholarID = scholarID.trim();
+      if (preregisteredScholarIDs.find((id) => id === scholarID)) {
+        return res.status(400).json({
+          status: "fail",
+          message: "one or more participants has already registered for the requested event",
+        });
+      }
       const user = await User.findOne({ scholarID: scholarID });
+      if (!user) {
+        return res.status(400).json({
+          status: "fail",
+          message: `user with scholar id : ${scholarID} not found`,
+        });
+      }
       memberIDs.push(user._id);
+      newlyregisteredScholarIDs.push(scholarID);
     }
 
     const team = await Team.create({
       name: teamName,
       members: memberIDs,
     });
+
+    event.teams = [...event.teams, team];
+    event.participants = [...event.participants, ...newlyregisteredScholarIDs];
+
+    await event.save();
 
     res.status(201).json({
       status: "success",
@@ -53,12 +90,23 @@ exports.register = async (req, res, next) => {
 exports.createAbacusEvent = async (req, res) => {
   try {
     const { name, description, startDate, endDate, eventType, minTeamSize, maxTeamSize } = req.body;
-    let myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
-      folder: "abacus",
-    });
+
+    let myCloud = {
+      public_id: null,
+      url: null,
+    };
+
+    if (req.files?.coverPic?.tempFilePath) {
+      myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
+        folder: "abacus",
+      });
+    }
 
     if (!name || !description || !startDate || !endDate || !eventType || !minTeamSize || !maxTeamSize) {
-      return res.status(400).json({ status: "fail", message: "Please provide all the details" });
+      return res.status(400).json({
+        status: "fail",
+        message: "Please provide all the details",
+      });
     }
 
     const event = await Abacus({

@@ -7,6 +7,9 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   codeforcesHandle: { type: String },
   githubHandle: { type: String },
+  registeredEvents: {
+    type: [mongoose.Schema.Types.ObjectId],
+  },
 });
 
 const User = mongoose.model("User", userSchema);
