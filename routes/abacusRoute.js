@@ -10,7 +10,7 @@ const {
 
 router.get("/", getAllAbacusEvents);
 router.post("/register/:event_id", register);
-router.post("/create", createAbacusEvent);
-router.post("/update", updateAbacusEvent);
+router.post("/", createAbacusEvent);
+router.patch("/:event_id", updateAbacusEvent);
 
 module.exports = router;

@@ -54,7 +54,7 @@ const userRoute = require("./routes/userRoutes.js");
 const abacusRoute = require("./routes/abacusRoute.js");
 const enigmaRoute = require("./routes/enigmaRoute");
 
-app.use("/api/user", userRoute);
-app.use("/api/abacus", abacusRoute);
-app.use("/api/enigma", enigmaRoute);
+app.use("/api/admin/user", userRoute);
+app.use("/api/admin/abacus", abacusRoute);
+app.use("/api/admin/enigma", enigmaRoute);
 module.exports = app;
