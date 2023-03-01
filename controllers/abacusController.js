@@ -41,6 +41,13 @@ exports.register = async (req, res, next) => {
       });
     }
 
+    if (memberScholarIDs < event.minTeamSize || memberScholarIDs.length > event.maxTeamSize) {
+      return res.status(400).json({
+        status: "fail",
+        message: `number of members must be between ${event.minTeamSize} and ${event.maxTeamSize} (inclusive)`,
+      });
+    }
+
     const newlyregisteredScholarIDs = [];
     const memberIDs = [];
 
