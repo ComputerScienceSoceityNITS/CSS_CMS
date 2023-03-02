@@ -2,7 +2,20 @@ const User = require("../models/users");
 const Crypto = require("node:crypto");
 const jwt = require("jsonwebtoken");
 
-//generate password hash function
+const getUser = (req, res) => {
+  try {
+    res.status(201).json({
+      status: "success",
+      user: req.user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "error",
+      message: error.name,
+    });
+  }
+};
+
 const generateHash = (password, salt = null) => {
   if (salt == null) {
     const salt = Crypto.randomBytes(16).toString("hex");
@@ -14,7 +27,6 @@ const generateHash = (password, salt = null) => {
   }
 };
 
-// signup funtion
 const signUp = async (req, res) => {
   try {
     const { name, password, email, scholarID, codeforcesHandle, githubHandle } = req.body;
@@ -28,10 +40,10 @@ const signUp = async (req, res) => {
 
     const query = User.findOne();
     query.or([
-      { email: email },
+      { email: email.toLowerCase() },
       { scholarID: scholarID },
       {
-        codeforcesHandle: codeforcesHandle,
+        codeforcesHandle: codeforcesHandle?.toLowerCase(),
       },
     ]);
     const existingUser = await query;
@@ -56,7 +68,13 @@ const signUp = async (req, res) => {
 
     res.status(201).json({
       status: "success",
-      user: user,
+      user: {
+        name: user.name,
+        email: user.email,
+        scholarID: user.scholarID,
+        githubHandle: user.githubHandle,
+        codeforcesHandle: user.codeforcesHandle,
+      },
     });
   } catch (e) {
     console.log(e);
@@ -145,4 +163,4 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-module.exports = { signUp, login, authenticate, logout };
+module.exports = { signUp, login, logout, authenticate, getUser };
