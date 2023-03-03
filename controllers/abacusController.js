@@ -32,12 +32,19 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    const { teamName, teamLeader, memberScholarIDs } = req.body;
+    const { teamName, memberScholarIDs } = req.body;
 
-    if (!(teamName && memberScholarIDs && memberScholarIDs.length >= 1 && teamLeader)) {
+    if (!(teamName && memberScholarIDs && memberScholarIDs.length >= 1)) {
       res.status(400).json({
         status: "fail",
         message: "please provide all required fields",
+      });
+    }
+
+    if (memberScholarIDs.length < event.minTeamSize || memberScholarIDs.length > event.maxTeamSize) {
+      return res.status(400).json({
+        status: "fail",
+        message: `number of members must be between ${event.minTeamSize} and ${event.maxTeamSize} (inclusive)`,
       });
     }
 
@@ -69,7 +76,6 @@ exports.register = async (req, res, next) => {
 
     const team = await Team.create({
       name: teamName,
-      leader: teamLeader,
       members: memberIDs,
     });
 

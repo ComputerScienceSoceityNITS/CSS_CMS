@@ -1,9 +1,12 @@
 const mongoose = require("mongoose");
+const { validateDate, validateMaxTeamSize, validateMinTeamSize } = require("../utils/validators");
 
 const abacusSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    trim: true,
+    lowercase: true,
   },
   description: {
     type: String,
@@ -12,14 +15,25 @@ const abacusSchema = new mongoose.Schema({
   startDate: {
     type: String,
     required: true,
+    validate: {
+      validator: validateDate,
+      message: "invalid start date",
+    },
   },
   endDate: {
     type: String,
     required: true,
+    trim: true,
+    validate: {
+      validator: validateDate,
+      message: "invalid end date",
+    },
   },
   eventType: {
     type: String,
     required: true,
+    trim: true,
+    lowercase: true,
   },
   participants: {
     type: [String],
@@ -30,9 +44,17 @@ const abacusSchema = new mongoose.Schema({
   },
   minTeamSize: {
     type: Number,
+    validate: {
+      validator: validateMinTeamSize,
+      message: "invalid min team size",
+    },
   },
   maxTeamSize: {
     type: Number,
+    validate: {
+      validator: validateMaxTeamSize,
+      message: "invalid min or max team sizes",
+    },
   },
   winners: {
     type: [mongoose.Schema.Types.ObjectId],
