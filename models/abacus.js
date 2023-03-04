@@ -4,7 +4,7 @@ const {
   validateMaxTeamSize,
   validateMinTeamSize,
   validateTime,
-  validateUrl,
+  validateGroupLink,
 } = require("../utils/validators");
 
 const abacusSchema = new mongoose.Schema({
@@ -46,7 +46,7 @@ const abacusSchema = new mongoose.Schema({
   groupLink: {
     type: String,
     validate: {
-      validator: validateUrl,
+      validator: validateGroupLink,
       message: "invalid group link",
     },
   },

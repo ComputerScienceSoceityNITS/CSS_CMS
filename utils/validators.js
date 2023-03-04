@@ -17,8 +17,9 @@ exports.validateTime = function (startTime) {
   return isTime(startTime + "");
 };
 
-exports.validateUrl = function (URL) {
-  return isURL(URL + "");
+exports.validateGroupLink = function (URL) {
+  // group link can be null
+  return URL === null || isURL(URL + "");
 };
 
 exports.validateMinTeamSize = function (minTeamSize) {

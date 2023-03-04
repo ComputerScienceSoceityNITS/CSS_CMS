@@ -7,10 +7,16 @@ const {
   updateEnigma,
   deleteEnigma,
 } = require("../controllers/enigmaController");
+const { isAdmin } = require("../controllers/admin");
+const { authenticate } = require("../controllers/userController");
 
+// open routes
 router.get("/cfID", getCodeforcesHandles);
 router.get("/", getAllEnigmas);
-router.post("/", createEnigma);
-router.patch("/:enigma_id", updateEnigma);
-router.delete("/:enigma_id", deleteEnigma);
+
+// protected routes
+router.post("/", isAdmin, createEnigma);
+router.patch("/:enigma_id", isAdmin, updateEnigma);
+router.delete("/:enigma_id", isAdmin, deleteEnigma);
+
 module.exports = router;
