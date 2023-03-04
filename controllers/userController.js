@@ -94,7 +94,7 @@ const login = async (req, res) => {
       return;
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
       res.status(401).json({ error: "No Such User!!!" });
@@ -130,10 +130,17 @@ const login = async (req, res) => {
         secure: false,
       });
     } else {
-      res.status(401).json({ error: "Invalid Credentials" });
+      res.status(401).json({
+        status: "fail",
+        error: "Invalid Credentials",
+      });
     }
   } catch (e) {
-    res.status(401).json({ error: "Something Went Wrong. Please Try Again!!!" });
+    console.log(e);
+    res.status(500).json({
+      status: "error",
+      error: "Something Went Wrong. Please Try Again!!!",
+    });
   }
 };
 

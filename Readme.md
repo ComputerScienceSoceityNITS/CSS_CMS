@@ -25,23 +25,25 @@ A headless CMS for CSS Website and App.
 
 ### Route for Users
 
+- Get `/api/admin/user/` get signed in user details
 - Post `/api/admin/user/signup` register/signup user
 - Post `/api/admin/user/login` login user
 - Get `/api/admin/user/logout` logout user
 
 ### Route for Abacus Events
 
+- Post `/api/admin/abacus/` create event _admin only_
+- Patch `/api/admin/abacus/:event_id` update event _admin only_
 - Get `/api/admin/abacus/` get all abacus events
-- Post `/api/admin/abacus/register/:event_id` register for event
-- Post `/api/admin/abacus/` create event
-- Patch `/api/admin/abacus/:event_id` update event
+- Post `/api/admin/abacus/register/:event_id` register signed-in user for event
 
 ### Route for Enigma Events
 
+- Post `/api/admin/enigma` create enigma _admin only_
+- Patch `/api/admin/enigma/:enigma_id` update enigma _admin only_
+- Delete `/api/admin/enigma/:enigma_id` delete enigma _admin only_
 - Get `/api/admin/enigma` get details on all enigmas
-- Post `/api/admin/enigma` create enigma
-- Patch `/api/admin/enigma/:enigma_id` update enigma
-- Delete `/api/admin/enigma/:enigma_id` delete enigma
+- Post `/api/admin/enigma/register/:enigma_id` register signed-in user for enigma
 - Get `/api/admin/enigma/cfID` get all users with provided codeforces handles
 
 **Installation**

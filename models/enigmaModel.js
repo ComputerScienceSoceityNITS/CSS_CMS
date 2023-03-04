@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { validateDate, validateTime } = require("../utils/validators");
 
 const enigmaSchema = new mongoose.Schema({
   cfContestLink: {
@@ -6,10 +7,21 @@ const enigmaSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  start: {
-    type: Date,
-    unique: true,
+  startDate: {
+    type: String,
     required: true,
+    validate: {
+      validator: validateDate,
+      message: "invalid start date",
+    },
+  },
+  startTime: {
+    type: String,
+    required: true,
+    validate: {
+      validator: validateTime,
+      message: "invalid start time",
+    },
   },
   durationInHrs: {
     type: Number,
