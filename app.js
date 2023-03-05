@@ -22,9 +22,9 @@ app.use(fileUpload({ useTempFiles: true }));
 // enable cors
 const ALLOWED_ORIGINS = ["http://localhost:3000", process.env.CLIENT_URL, process.env.ADMIN_URL];
 
-app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true })); 
+app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
 
-app.use((req, res, next) => { 
+app.use((req, res, next) => {
   const { origin } = req.headers;
   const theOrigin = ALLOWED_ORIGINS.indexOf(origin) >= 0 ? origin : ALLOWED_ORIGINS[0];
   res.header("Access-Control-Allow-Origin", theOrigin);
@@ -44,11 +44,9 @@ app.use(xss());
 app.use(mongoSanitize());
 
 const members = require("./routes/membersRoute.js");
-const events = require("./routes/eventsRoute.js");
 const admin = require("./routes/adminRoute.js");
 
 app.use("/api/admin", members);
-app.use("/api/admin", events);
 app.use("/api/admin", admin);
 
 //routes for general users
@@ -56,7 +54,7 @@ const userRoute = require("./routes/userRoutes.js");
 const abacusRoute = require("./routes/abacusRoute.js");
 const enigmaRoute = require("./routes/enigmaRoute");
 
-app.use("/user", userRoute);
-app.use("/abacus", abacusRoute);
-app.use("/enigma", enigmaRoute);
+app.use("/api/admin/user", userRoute);
+app.use("/api/admin/abacus", abacusRoute);
+app.use("/api/admin/enigma", enigmaRoute);
 module.exports = app;

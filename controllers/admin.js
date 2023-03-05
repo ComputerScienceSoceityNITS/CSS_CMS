@@ -16,22 +16,33 @@ exports.addAdmin = async (req, res) => {
   }
 };
 
-exports.isAuthenticatedUser = async (req, res, next) => {
+exports.isAdmin = async (req, res, next) => {
   try {
     const { CSS_Website } = req.cookies;
 
     if (!CSS_Website) {
       return res.status(401).json({
-        success: false,
+        status: "fail",
         message: "Please login to access this Resource",
       });
     }
 
     const decodedData = jwt.verify(CSS_Website, process.env.JWT_SECRET);
-    req.user = await Admin.findById(decodedData.id);
+    const user = await Admin.findById(decodedData.id);
+    if (!user) {
+      return res.status(401).json({
+        status: "fail",
+        message: "admin not found",
+      });
+    }
+    req.user = user;
     next();
   } catch (err) {
-    res.send(err.message);
+    res.status(500).json({
+      status: "error",
+      message: "something went wrong",
+      error: err.message,
+    });
   }
 };
 
@@ -57,7 +68,11 @@ exports.login = async (req, res, next) => {
     }
     sendToken(admin, 201, res);
   } catch (err) {
-    res.send(err.message);
+    console.log(err);
+    res.status(500).json({
+      status: "error",
+      error: JSON.stringify(err),
+    });
   }
 };
 

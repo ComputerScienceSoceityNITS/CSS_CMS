@@ -4,6 +4,9 @@ const teamSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    unique: [true, "team name already used"],
+    lowercase: true,
+    trim: true,
   },
   members: {
     type: [mongoose.Schema.Types.ObjectId],

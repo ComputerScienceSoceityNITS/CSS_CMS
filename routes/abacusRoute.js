@@ -1,10 +1,23 @@
 const express = require("express");
 const router = express.Router();
 
-const { register, createAbacusEvent, updateAbacusEvent } = require("../controllers/abacusController");
+const {
+  register,
+  createAbacusEvent,
+  updateAbacusEvent,
+  getAllAbacusEvents,
+} = require("../controllers/abacusController");
+const { isAdmin } = require("../controllers/admin");
+const { authenticate } = require("../controllers/userController");
 
-router.post("/register/:event_id", register);
-router.post("/create", createAbacusEvent);
-router.post("/update", updateAbacusEvent);
+// open routes
+router.get("/", getAllAbacusEvents);
+
+// registered user routes
+router.post("/register/:event_id", authenticate, register);
+
+// admin only routes
+router.post("/", isAdmin, createAbacusEvent);
+router.patch("/:event_id", isAdmin, updateAbacusEvent);
 
 module.exports = router;
