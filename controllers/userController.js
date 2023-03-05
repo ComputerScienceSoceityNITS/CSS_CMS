@@ -19,7 +19,7 @@ const signUp = async (req, res) => {
   try {
     const { name, password, email, scholarID, codeforcesHandle, githubHandle } = req.body;
 
-    if (!name || !email || !password || !scholarID) {
+    if (!name || !email || !password || !scholarID || !codeforcesHandle) {
       res.status(401).json({ error: "Please Fill In All The Details" });
       return;
     }
@@ -126,6 +126,7 @@ const authenticate = async (req, res, next) => {
     const token=req.headers.cookie.split("=")[1]
     const email = await jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne({ email: email.email });
+
     req.user = user;
     next(); 
      
