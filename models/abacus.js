@@ -1,5 +1,11 @@
 const mongoose = require("mongoose");
-const { validateDate, validateMaxTeamSize, validateMinTeamSize } = require("../utils/validators");
+const {
+  validateDate,
+  validateMaxTeamSize,
+  validateMinTeamSize,
+  validateTime,
+  validateGroupLink,
+} = require("../utils/validators");
 
 const abacusSchema = new mongoose.Schema({
   name: {
@@ -27,6 +33,21 @@ const abacusSchema = new mongoose.Schema({
     validate: {
       validator: validateDate,
       message: "invalid end date",
+    },
+  },
+  startTime: {
+    type: String,
+    required: true,
+    validate: {
+      validator: validateTime,
+      message: "invalid start time",
+    },
+  },
+  groupLink: {
+    type: String,
+    validate: {
+      validator: validateGroupLink,
+      message: "invalid group link",
     },
   },
   eventType: {

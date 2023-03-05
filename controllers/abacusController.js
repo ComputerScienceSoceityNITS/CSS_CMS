@@ -5,7 +5,14 @@ const cloudinary = require("cloudinary");
 
 exports.getAllAbacusEvents = async (req, res, next) => {
   try {
-    const abacusEvents = await Abacus.find();
+    const abacusEvents = await Abacus.find().populate({
+      path: "teams",
+      select: "-__v",
+      populate: {
+        path: "members",
+        select: "name",
+      },
+    });
     return res.status(201).json({
       status: "success",
       events: abacusEvents,
@@ -23,7 +30,7 @@ exports.register = async (req, res, next) => {
   try {
     const event_id = req.params.event_id;
     const event = await Abacus.findById(event_id);
-    const preregisteredScholarIDs = event.participants;
+    const registeredScholarIDs = event.participants;
 
     if (!event) {
       return res.status(404).json({
@@ -48,12 +55,11 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    const newlyregisteredScholarIDs = [];
     const memberIDs = [];
 
     for (let scholarID of memberScholarIDs) {
       scholarID = scholarID.trim();
-      if (preregisteredScholarIDs.find((id) => id === scholarID)) {
+      if (registeredScholarIDs.find((id) => id === scholarID)) {
         return res.status(400).json({
           status: "fail",
           message: "one or more participants has already registered for the requested event",
@@ -71,7 +77,7 @@ exports.register = async (req, res, next) => {
       user.registeredAbacusEvents.push(event._id);
       await user.save();
       memberIDs.push(user._id);
-      newlyregisteredScholarIDs.push(scholarID);
+      registeredScholarIDs.push(scholarID);
     }
 
     const team = await Team.create({
@@ -80,14 +86,19 @@ exports.register = async (req, res, next) => {
     });
 
     event.teams = [...event.teams, team];
-    event.participants = [...event.participants, ...newlyregisteredScholarIDs];
+    event.participants = registeredScholarIDs;
 
     await event.save();
+
+    const createdTeam = await Team.findById(team).populate({
+      path: "members",
+      select: "name scholarID",
+    });
 
     res.status(201).json({
       status: "success",
       message: "team successfully created",
-      team: team,
+      team: createdTeam,
     });
   } catch (err) {
     console.log(err);
@@ -100,7 +111,8 @@ exports.register = async (req, res, next) => {
 
 exports.createAbacusEvent = async (req, res) => {
   try {
-    const { name, description, startDate, endDate, eventType, minTeamSize, maxTeamSize } = req.body;
+    const { name, description, startDate, endDate, startTime, groupLink, eventType, minTeamSize, maxTeamSize } =
+      req.body;
 
     let myCloud = {
       public_id: null,
@@ -113,7 +125,7 @@ exports.createAbacusEvent = async (req, res) => {
       });
     }
 
-    if (!name || !description || !startDate || !endDate || !eventType || !minTeamSize || !maxTeamSize) {
+    if (!name || !description || !startDate || !endDate || !eventType || !minTeamSize || !maxTeamSize || !startTime) {
       return res.status(400).json({
         status: "fail",
         message: "Please provide all the details",
@@ -128,15 +140,17 @@ exports.createAbacusEvent = async (req, res) => {
       eventType,
       minTeamSize,
       maxTeamSize,
+      startTime,
+      groupLink: groupLink || null,
       coverPic: {
         public_id: myCloud.public_id,
         url: myCloud.url,
       },
     }).save();
 
-    res.status(200).json({ status: "success", message: "Event Succesfully Created", event: event });
+    return res.status(200).json({ status: "success", message: "Event Succesfully Created", event: event });
   } catch (e) {
-    res.status(500).json({ status: "error", message: `something went wrong: ${e}` });
+    return res.status(500).json({ status: "error", message: `something went wrong: ${e}` });
   }
 };
 
@@ -155,11 +169,6 @@ exports.updateAbacusEvent = async (req, res) => {
     if (req.files) {
       const imageId = event.coverPic.public_id;
       await cloudinary.v2.uploader.destroy(imageId);
-    }
-
-    const newBodyObj = req.body;
-
-    if (req.files) {
       const myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
         folder: "abacus",
       });
@@ -169,8 +178,23 @@ exports.updateAbacusEvent = async (req, res) => {
       };
     }
 
-    Object.assign(event, newBodyObj);
-    const updatedEvent = await event.save();
+    const { name, description, startDate, endDate, startTime, groupLink, eventType, minTeamSize, maxTeamSize } =
+      req.body;
+
+    const updatedEvent = {
+      name: name || event.name,
+      description: description || event.description,
+      startDate: startDate || event.startDate,
+      endDate: endDate || event.endDate,
+      startTime: startTime || event.startTime,
+      groupLink: groupLink || event.groupLink,
+      eventType: eventType || event.eventType,
+      minTeamSize: minTeamSize || event.minTeamSize,
+      maxTeamSize: maxTeamSize || event.maxTeamSize,
+    };
+
+    Object.assign(event, updatedEvent);
+    await event.save();
 
     res.status(200).json({ status: "success", message: "event successfully updated", event: updatedEvent });
   } catch (e) {

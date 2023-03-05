@@ -17,6 +17,44 @@ exports.getCodeforcesHandles = async (req, res, next) => {
   }
 };
 
+exports.register = async (req, res, next) => {
+  try {
+    const enigma_id = req.params.enigma_id;
+    const event = await Enigma.findById(enigma_id);
+
+    if (!event) {
+      return res.status(400).json({
+        status: "fail",
+        message: `no event found with the given id: ${enigma_id}`,
+      });
+    }
+
+    const user = await Users.findById(req.user._id);
+    if (event.participants.find((id) => id.equals(user._id))) {
+      return res.status(400).json({
+        status: "fail",
+        message: "user already registered for the event",
+      });
+    }
+
+    event.participants = [...event.participants, user._id];
+    user.registeredEnigmas = [...user.registeredEnigmas, event._id];
+    await event.save();
+    await user.save();
+    res.status(200).json({
+      status: "success",
+      message: "user successfully registered",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: "error",
+      message: "something went wrong",
+      error: error.message,
+    });
+  }
+};
+
 exports.getAllEnigmas = async (req, res, next) => {
   try {
     const enigmas = await Enigma.find();
@@ -35,23 +73,25 @@ exports.getAllEnigmas = async (req, res, next) => {
 
 exports.createEnigma = async (req, res, next) => {
   try {
-    const { cfContestLink, start, durationInHrs, questionSetters, questionTesters } = req.body;
+    const { cfContestLink, startDate, startTime, durationInHrs, questionSetters, questionTesters } = req.body;
 
-    if (!(cfContestLink && start && durationInHrs)) {
-      return res.status(400).json({ status: "fail", message: "Please provide all the details" });
+    if (!(cfContestLink && startDate && startTime && durationInHrs)) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Please provide all the details",
+      });
     }
-
-    const startDate = new Date(start);
 
     const enigma = await Enigma({
       cfContestLink,
-      start: startDate,
+      startDate,
+      startTime,
       durationInHrs,
-      questionSetters: questionSetters || [],
-      questionTesters: questionTesters || [],
+      questionSetters,
+      questionTesters,
     }).save();
 
-    res.status(200).json({ status: "success", message: "Enigma Succesfully Created", enigma: enigma });
+    res.status(201).json({ status: "success", message: "Enigma Succesfully Created", enigma: enigma });
   } catch (e) {
     console.log(e);
     res.status(500).json({ status: "error", message: `something went wrong: ${e.name}` });

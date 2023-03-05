@@ -1,4 +1,4 @@
-const { isEmail, isInt, isDate } = require("validator");
+const { isEmail, isInt, isDate, isTime, isURL } = require("validator");
 
 exports.validateEmail = function (email) {
   return isEmail(email);
@@ -11,6 +11,15 @@ exports.validateScholarID = function (scholarID) {
 
 exports.validateDate = function (date) {
   return isDate(date);
+};
+
+exports.validateTime = function (startTime) {
+  return isTime(startTime + "");
+};
+
+exports.validateGroupLink = function (URL) {
+  // group link can be null
+  return URL === null || isURL(URL + "");
 };
 
 exports.validateMinTeamSize = function (minTeamSize) {
