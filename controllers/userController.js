@@ -1,5 +1,5 @@
 const User = require("../models/users");
-const Crypto = require("node:crypto");
+const Crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
 const getUser = (req, res) => {
