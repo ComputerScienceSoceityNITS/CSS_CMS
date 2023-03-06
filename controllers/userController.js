@@ -146,8 +146,8 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    res.clearCookie("css_jwt_token");
 
+    res.clearCookie("css_jwt_token");
     res.status(200).json({
       success: true,
       message: "Logged Out",
