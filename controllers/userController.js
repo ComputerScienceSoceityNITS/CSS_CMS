@@ -146,8 +146,8 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    res.clearCookie("css_jwt_token");
 
+    res.clearCookie("css_jwt_token");
     res.status(200).json({
       success: true,
       message: "Logged Out",
@@ -162,6 +162,7 @@ const authenticate = async (req, res, next) => {
     const token = req.headers.cookie.split("=")[1];
     const email = await jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne({ email: email.email });
+
     req.user = user;
     next();
   } catch (e) {
