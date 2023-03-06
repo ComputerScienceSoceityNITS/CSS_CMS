@@ -122,6 +122,7 @@ exports.createAbacusEvent = async (req, res) => {
     if (req.files?.coverPic?.tempFilePath) {
       myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
         folder: "abacus",
+        api_key:process.env.CLOUDINARY_API_KEY,api_secret:process.env.CLOUDINARY_API_SECRET,cloud_name: process.env.CLOUDINARY_NAME
       });
     }
 
@@ -171,6 +172,7 @@ exports.updateAbacusEvent = async (req, res) => {
       await cloudinary.v2.uploader.destroy(imageId);
       const myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
         folder: "abacus",
+        api_key:process.env.CLOUDINARY_API_KEY,api_secret:process.env.CLOUDINARY_API_SECRET,cloud_name: process.env.CLOUDINARY_NAME
       });
       newBodyObj["coverPic"] = {
         public_id: myCloud.public_id,
