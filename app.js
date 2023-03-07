@@ -18,6 +18,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(fileUpload({ useTempFiles: true }));
+app.use((req, res, next) => {
+  console.log(`[${req.method}] : ${req.originalUrl}`);
+  next();
+});
 
 // enable cors
 const ALLOWED_ORIGINS = ["http://localhost:3000", process.env.CLIENT_URL, process.env.ADMIN_URL];
@@ -57,4 +61,12 @@ const enigmaRoute = require("./routes/enigmaRoute");
 app.use("/api/admin/user", userRoute);
 app.use("/api/admin/abacus", abacusRoute);
 app.use("/api/admin/enigma", enigmaRoute);
+
+app.all("*", (req, res, next) => {
+  res.status(404).json({
+    status: "fail",
+    message: `endpoint ${req.originalUrl} not found on this server`,
+  });
+});
+
 module.exports = app;

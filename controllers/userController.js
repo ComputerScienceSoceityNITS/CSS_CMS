@@ -43,7 +43,7 @@ const signUp = async (req, res) => {
       { email: email.toLowerCase() },
       { scholarID: scholarID },
       {
-        codeforcesHandle: codeforcesHandle?.toLowerCase(),
+        codeforcesHandle: codeforcesHandle?.toLowerCase() || "",
       },
     ]);
     const existingUser = await query;
@@ -62,8 +62,8 @@ const signUp = async (req, res) => {
       email,
       password: encrypted_password,
       scholarID,
-      codeforcesHandle: codeforcesHandle || null,
-      githubHandle: githubHandle || null,
+      codeforcesHandle: codeforcesHandle,
+      githubHandle: githubHandle,
     }).save();
 
     res.status(201).json({
@@ -146,7 +146,6 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-
     res.clearCookie("css_jwt_token");
     res.status(200).json({
       success: true,
