@@ -9,8 +9,8 @@ exports.getAllAbacusEvents = async (req, res, next) => {
       path: "teams",
       select: "-__v",
       populate: {
-        path: "members",
-        select: "name",
+        path: "members teamLeader",
+        select: "name scholarID -_id",
       },
     });
     return res.status(201).json({
@@ -30,7 +30,7 @@ exports.register = async (req, res, next) => {
   try {
     const event_id = req.params.event_id;
     const event = await Abacus.findById(event_id);
-    const registeredScholarIDs = event.participants;
+    const participants = event.participants;
 
     if (!event) {
       return res.status(404).json({
@@ -39,14 +39,18 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    const { teamName, memberScholarIDs } = req.body;
+    let { teamName, teamLeaderScholarID, memberScholarIDs } = req.body;
+    memberScholarIDs = memberScholarIDs || [];
 
-    if (!(teamName && memberScholarIDs && memberScholarIDs.length >= 1)) {
-      res.status(400).json({
+    if (!(teamName && teamLeaderScholarID)) {
+      return res.status(400).json({
         status: "fail",
         message: "please provide all required fields",
       });
     }
+
+    // push team leader to the list of members
+    memberScholarIDs.push(teamLeaderScholarID);
 
     if (memberScholarIDs.length < event.minTeamSize || memberScholarIDs.length > event.maxTeamSize) {
       return res.status(400).json({
@@ -55,43 +59,55 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    const memberIDs = [];
+    // to store all retrieved documents
+    const teamMembers = [];
 
+    // verify if all scholar ids are registered and not repeated
     for (let scholarID of memberScholarIDs) {
       scholarID = scholarID.trim();
-      if (registeredScholarIDs.find((id) => id === scholarID)) {
-        return res.status(400).json({
-          status: "fail",
-          message: "one or more participants has already registered for the requested event",
-        });
-      }
-      const user = await User.findOne({ scholarID: scholarID });
 
-      if (!user) {
+      const member = await User.findOne({ scholarID: scholarID });
+
+      if (!member) {
         return res.status(400).json({
           status: "fail",
           message: `user with scholar id : ${scholarID} not found`,
         });
       }
 
-      user.registeredAbacusEvents.push(event._id);
-      await user.save();
-      memberIDs.push(user._id);
-      registeredScholarIDs.push(scholarID);
+      if (participants.find((id) => id === scholarID)) {
+        return res.status(400).json({
+          status: "fail",
+          message: "one or more participants has already registered for the requested event",
+        });
+      }
+
+      participants.push(member.scholarID);
+      teamMembers.push(member);
     }
+
+    // add current event id to user's list of registered events
+    for (let member of teamMembers) {
+      member.registeredAbacusEvents.push(event._id);
+      await member.save();
+    }
+
+    // remove teamLeader from members list
+    const teamLeader = teamMembers.pop();
 
     const team = await Team.create({
       name: teamName,
-      members: memberIDs,
+      teamLeader: teamLeader,
+      members: teamMembers,
     });
 
+    // add new participants to event document
     event.teams = [...event.teams, team];
-    event.participants = registeredScholarIDs;
-
+    event.participants = participants;
     await event.save();
 
     const createdTeam = await Team.findById(team).populate({
-      path: "members",
+      path: "members teamLeader",
       select: "name scholarID",
     });
 
@@ -122,7 +138,9 @@ exports.createAbacusEvent = async (req, res) => {
     if (req.files?.coverPic?.tempFilePath) {
       myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
         folder: "abacus",
-        api_key:process.env.CLOUDINARY_API_KEY,api_secret:process.env.CLOUDINARY_API_SECRET,cloud_name: process.env.CLOUDINARY_NAME
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+        cloud_name: process.env.CLOUDINARY_NAME,
       });
     }
 
@@ -172,7 +190,9 @@ exports.updateAbacusEvent = async (req, res) => {
       await cloudinary.v2.uploader.destroy(imageId);
       const myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
         folder: "abacus",
-        api_key:process.env.CLOUDINARY_API_KEY,api_secret:process.env.CLOUDINARY_API_SECRET,cloud_name: process.env.CLOUDINARY_NAME
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+        cloud_name: process.env.CLOUDINARY_NAME,
       });
       newBodyObj["coverPic"] = {
         public_id: myCloud.public_id,
