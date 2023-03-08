@@ -65,7 +65,7 @@ app.use("/api/admin/enigma", enigmaRoute);
 app.all("*", (req, res, next) => {
   res.status(404).json({
     status: "fail",
-    message: `endpoint ${req.originalUrl} not found on this server`,
+    message: `endpoint [${req.method}] : ${req.originalUrl} not found on this server`,
   });
 });
 

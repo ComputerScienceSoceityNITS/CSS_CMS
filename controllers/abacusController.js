@@ -59,6 +59,13 @@ exports.register = async (req, res, next) => {
       });
     }
 
+    if (!memberScholarIDs.find((scholarID) => scholarID === req.user.scholarID)) {
+      return res.status(400).json({
+        status: "fail",
+        message: "signed-in user must be included in the team",
+      });
+    }
+
     // to store all retrieved documents
     const teamMembers = [];
 
