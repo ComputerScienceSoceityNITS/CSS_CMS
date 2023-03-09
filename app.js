@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const xss = require("xss-clean");
 const mongoSanitize = require("express-mongo-sanitize");
 const app = express();
+const { globalErrorHandler } = require("./utils/errorHandler");
 
 //config
 if (process.env.NODE_ENV !== "PRODUCTION") {
@@ -68,5 +69,7 @@ app.all("*", (req, res, next) => {
     message: `endpoint [${req.method}] : ${req.originalUrl} not found on this server`,
   });
 });
+
+app.use(globalErrorHandler);
 
 module.exports = app;
