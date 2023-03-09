@@ -4,7 +4,7 @@ const cloudinary = require("cloudinary");
 
 const connectDataBase = require("./config/database");
 
-//config  
+//config
 if (process.env.NODE_ENV !== "PRODUCTION") {
   require("dotenv").config({ path: "./config/.env" });
 }

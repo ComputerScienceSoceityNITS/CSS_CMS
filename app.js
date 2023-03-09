@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const xss = require("xss-clean");
 const mongoSanitize = require("express-mongo-sanitize");
 const app = express();
+const { globalErrorHandler } = require("./utils/errorHandler");
 
 //config
 if (process.env.NODE_ENV !== "PRODUCTION") {
@@ -18,6 +19,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(fileUpload({ useTempFiles: true }));
+app.use((req, res, next) => {
+  console.log(`[${req.method}] : ${req.originalUrl}`);
+  next();
+});
 app.use((req, res, next) => {
   console.log(`[${req.method}] : ${req.originalUrl}`);
   next();
@@ -65,8 +70,10 @@ app.use("/api/admin/enigma", enigmaRoute);
 app.all("*", (req, res, next) => {
   res.status(404).json({
     status: "fail",
-    message: `endpoint ${req.originalUrl} not found on this server`,
+    message: `endpoint [${req.method}] : ${req.originalUrl} not found on this server`,
   });
 });
+
+app.use(globalErrorHandler);
 
 module.exports = app;
