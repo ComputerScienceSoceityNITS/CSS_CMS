@@ -23,6 +23,10 @@ app.use((req, res, next) => {
   console.log(`[${req.method}] : ${req.originalUrl}`);
   next();
 });
+app.use((req, res, next) => {
+  console.log(`[${req.method}] : ${req.originalUrl}`);
+  next();
+});
 
 // enable cors
 const ALLOWED_ORIGINS = ["http://localhost:3000", process.env.CLIENT_URL, process.env.ADMIN_URL];
