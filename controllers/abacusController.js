@@ -117,29 +117,39 @@ exports.register = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createAbacusEvent = catchAsync(async (req, res) => {
-  const { name, description, startDate, endDate, startTime, groupLink, eventType, minTeamSize, maxTeamSize } = req.body;
+exports.createAbacusEvent = catchAsync(async (req, res, next) => {
+  const { name, description, startDate, endDate, startTime, groupLink, eventType, minTeamSize, maxTeamSize, coverPic } =
+    req.body;
+
+  if (
+    !name ||
+    !description ||
+    !startDate ||
+    !endDate ||
+    !eventType ||
+    !minTeamSize ||
+    !maxTeamSize ||
+    !startTime ||
+    !coverPic ||
+    coverPic === "undefined"
+  ) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Please provide all the details",
+    });
+  }
 
   let myCloud = {
     public_id: null,
     url: null,
   };
 
-  if (req.files?.coverPic?.tempFilePath) {
-    myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
-      folder: "abacus",
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-      cloud_name: process.env.CLOUDINARY_NAME,
-    });
-  }
-
-  if (!name || !description || !startDate || !endDate || !eventType || !minTeamSize || !maxTeamSize || !startTime) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Please provide all the details",
-    });
-  }
+  myCloud = await cloudinary.v2.uploader.upload(coverPic, {
+    folder: "abacus",
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    cloud_name: process.env.CLOUDINARY_NAME,
+  });
 
   const event = await Abacus({
     name,
@@ -160,7 +170,7 @@ exports.createAbacusEvent = catchAsync(async (req, res) => {
   return res.status(200).json({ status: "success", message: "Event Succesfully Created", event: event });
 });
 
-exports.updateAbacusEvent = catchAsync(async (req, res) => {
+exports.updateAbacusEvent = catchAsync(async (req, res, next) => {
   const id = req.params.event_id;
   const event = await Abacus.findById(id);
 
@@ -171,19 +181,19 @@ exports.updateAbacusEvent = catchAsync(async (req, res) => {
     });
   }
 
-  if (req.files) {
+  let newCoverPic = event.coverPic;
+
+  if (req.body.coverPic && req.body.coverPic != "undefined") {
     const imageId = event.coverPic.public_id;
     await cloudinary.v2.uploader.destroy(imageId);
-    const myCloud = await cloudinary.v2.uploader.upload(req.files.coverPic.tempFilePath, {
+    const myCloud = await cloudinary.v2.uploader.upload(req.body.coverPic, {
       folder: "abacus",
       api_key: process.env.CLOUDINARY_API_KEY,
       api_secret: process.env.CLOUDINARY_API_SECRET,
       cloud_name: process.env.CLOUDINARY_NAME,
     });
-    newBodyObj["coverPic"] = {
-      public_id: myCloud.public_id,
-      url: myCloud.secure_url,
-    };
+    newCoverPic.public_id = myCloud.public_id;
+    newCoverPic.url = myCloud.url;
   }
 
   const { name, description, startDate, endDate, startTime, groupLink, eventType, minTeamSize, maxTeamSize } = req.body;
@@ -198,10 +208,34 @@ exports.updateAbacusEvent = catchAsync(async (req, res) => {
     eventType: eventType || event.eventType,
     minTeamSize: minTeamSize || event.minTeamSize,
     maxTeamSize: maxTeamSize || event.maxTeamSize,
+    coverPic: newCoverPic,
   };
 
   Object.assign(event, updatedEvent);
   await event.save();
 
   res.status(200).json({ status: "success", message: "event successfully updated", event: updatedEvent });
+});
+
+exports.deleteAbacusEvent = catchAsync(async (req, res, next) => {
+  const id = req.params.event_id;
+  const event = await Abacus.findById(id);
+
+  if (!event) {
+    return res.status(400).json({
+      status: "fail",
+      message: "No such event exists",
+    });
+  }
+
+  const imageId = event.coverPic?.public_id;
+  if (imageId) {
+    await cloudinary.v2.uploader.destroy(imageId);
+  }
+  await Abacus.findByIdAndDelete(id);
+
+  return res.status(200).json({
+    status: "success",
+    message: "successfully deleted",
+  });
 });
