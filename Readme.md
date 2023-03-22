@@ -34,6 +34,7 @@ A headless CMS for CSS Website and App.
 
 - Post `/api/admin/abacus/` create event _admin only_
 - Patch `/api/admin/abacus/:event_id` update event _admin only_
+- Delete `/api/admin/abacus/:event_id` delete event _admin only_
 - Get `/api/admin/abacus/` get all abacus events
 - Post `/api/admin/abacus/register/:event_id` register signed-in user for event
 
