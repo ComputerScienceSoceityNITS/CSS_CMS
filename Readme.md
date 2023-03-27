@@ -47,6 +47,33 @@ A headless CMS for CSS Website and App.
 - Post `/api/admin/enigma/register/:enigma_id` register signed-in user for enigma
 - Get `/api/admin/enigma/cfID` get all users with provided codeforces handles
 
+### Fields for user creation
+
+- `name` : string, required
+- `email` : string, required
+- `password`: string, required
+- `scholarID`: string, required
+- `codeforcesHandle`: string, optional
+- `githubHandle`: string, optional
+
+### Fields for abacus event creation
+
+- `name`: string, required
+- `description`: string, required
+- `startDate`, `endDate`: string, required
+- `eventType`: string, required
+- `minTeamSize`, `maxTeamSize`: string, required
+- `startTime`: string, required
+- `coverPic`: base64 encoded image
+
+### Fields for abacus registration
+
+- `event_id`: string, required [as URL parameter]
+- `teamName`: string, required
+- `teamLeaderScholarID`: string, required
+- `memberScholarIDs`: Array of string, required [__must be enough to meet minTeamSize requirement__]
+- **all scholar IDs present in the submitted fields must have an account**
+
 **Installation**
 
 1. Clone the repo _Or_ Run `git pull origin master` if already cloned.
