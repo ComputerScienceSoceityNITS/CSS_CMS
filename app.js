@@ -7,7 +7,7 @@ const helmet = require("helmet");
 const xss = require("xss-clean");
 const mongoSanitize = require("express-mongo-sanitize");
 const app = express();
-const { globalErrorHandler } = require("./utils/errorHandler");
+const { globalErrorHandler, AppError } = require("./utils/errorHandler");
 
 //config
 if (process.env.NODE_ENV !== "PRODUCTION") {
@@ -19,31 +19,30 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(fileUpload({ useTempFiles: true }));
-app.use((req, res, next) => {
-  console.log(`[${req.method}] : ${req.originalUrl}`);
-  next();
-});
+
+// logger
 app.use((req, res, next) => {
   console.log(`[${req.method}] : ${req.originalUrl}`);
   next();
 });
 
 // enable cors
-const ALLOWED_ORIGINS = ["http://localhost:3000", process.env.CLIENT_URL, process.env.ADMIN_URL];
-
-app.use(cors({ origin: ALLOWED_ORIGINS, credentials: true }));
+const whitelist = ["http://127.0.0.1:3000", "http://localhost:3000", process.env.CLIENT_URL, process.env.ADMIN_URL];
 
 app.use((req, res, next) => {
-  const { origin } = req.headers;
-  const theOrigin = ALLOWED_ORIGINS.indexOf(origin) >= 0 ? origin : ALLOWED_ORIGINS[0];
-  res.header("Access-Control-Allow-Origin", theOrigin);
+  const origin = req.headers.origin;
+  if (process.env.NODE_ENV === "prod" && whitelist.indexOf(origin) !== -1) {
+    return next(new AppError("CORS Error: Origin not allowed", 403));
+  }
+  res.header("Access-Control-Allow-Origin", origin);
   res.header("Access-Control-Allow-Credentials", true);
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, GET, HEAD, OPTIONS, DELETE");
+    return res.status(200).json({});
+  }
   next();
 });
-
-app.options("*", cors());
 
 // set security HTTP headers
 app.use(helmet());
