@@ -1,7 +1,7 @@
 const User = require("../models/users");
 const Crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const { catchAsync } = require("../utils/errorHandler");
+const { catchAsync, AppError } = require("../utils/errorHandler");
 
 const getUser = (req, res) => {
   try {
@@ -138,6 +138,9 @@ const logout = catchAsync(async (req, res, next) => {
 });
 
 const authenticate = catchAsync(async (req, res, next) => {
+  if (!req.headers.cookie) {
+    return next(new AppError("No cookie found...try logging in again."));
+  }
   const token = req.headers.cookie.split("=")[1];
   const email = await jwt.verify(token, process.env.JWT_SECRET);
   const user = await User.findOne({ email: email.email });
