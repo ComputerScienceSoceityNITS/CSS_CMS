@@ -22,7 +22,6 @@ exports.getAllAbacusEvents = catchAsync(async (req, res, next) => {
 exports.register = catchAsync(async (req, res, next) => {
   const event_id = req.params.event_id;
   const event = await Abacus.findById(event_id);
-  const participants = event.participants;
 
   if (!event) {
     return res.status(404).json({
@@ -30,6 +29,8 @@ exports.register = catchAsync(async (req, res, next) => {
       message: `no event found with given id: ${event_id}`,
     });
   }
+
+  const participants = event.participants;
 
   let { teamName, teamLeaderScholarID, memberScholarIDs } = req.body;
   memberScholarIDs = memberScholarIDs || [];
