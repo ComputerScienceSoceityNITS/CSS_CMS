@@ -10,7 +10,7 @@ exports.getAllAbacusEvents = catchAsync(async (req, res, next) => {
     select: "-__v",
     populate: {
       path: "members teamLeader",
-      select: "name scholarID -_id",
+      select: "name scholarID email -_id",
     },
   });
   return res.status(201).json({

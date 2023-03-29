@@ -2,6 +2,7 @@ const User = require("../models/users");
 const Crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { catchAsync, AppError } = require("../utils/errorHandler");
+const { getCookie } = require("../utils/getCookie");
 
 const getUser = (req, res) => {
   try {
@@ -138,34 +139,33 @@ const logout = catchAsync(async (req, res, next) => {
 });
 
 const updateProfile = catchAsync(async (req, res, next) => {
-
-  const {name, email, scholarID, codeforcesHandle, githubHandle} = req.body;
+  const { name, email, scholarID, codeforcesHandle, githubHandle } = req.body;
   const updatedData = {
-    name :  name || req.user.name,
-    email : email || req.user.email,
-    scholarID : scholarID || req.user.scholarID,
-    codeforcesHandle : codeforcesHandle || req.user.codeforcesHandle,
-    githubHandle : githubHandle || req.user.githubHandle
-  } 
-  
+    name: name || req.user.name,
+    email: email || req.user.email,
+    scholarID: scholarID || req.user.scholarID,
+    codeforcesHandle: codeforcesHandle || req.user.codeforcesHandle,
+    githubHandle: githubHandle || req.user.githubHandle,
+  };
+
   const updatedUser = req.user;
   Object.assign(updatedUser, updatedData);
   await updatedUser.save();
   next();
-  
 });
 
 const authenticate = catchAsync(async (req, _res, next) => {
-  if (!req.headers.cookie) {
-    return next(new AppError("No cookie found...try logging in again."));
+  const token = getCookie("css_jwt_token", req.headers.cookie);
+
+  if (!token) {
+    return next(new AppError("No auth token found...try logging in again."));
   }
 
-  const token = req.headers.cookie.split("=")[1];
   const email = await jwt.verify(token, process.env.JWT_SECRET);
   const user = await User.findOne({ email: email.email });
 
   req.user = user;
-  next(); 
+  next();
 });
 
 module.exports = { signUp, login, logout, authenticate, getUser, updateProfile };
