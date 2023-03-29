@@ -83,15 +83,19 @@ const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    res.status(401).json({ error: "Please Fill in All the Details!!!" });
-    return;
+    return res.status(401).json({
+      status: "fail",
+      error: "please fill in all the required details",
+    });
   }
 
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    res.status(401).json({ error: "No Such User!!!" });
-    return;
+    return res.status(401).json({
+      status: "fail",
+      message: "user not found",
+    });
   }
 
   const hashedPassword = user.password;
@@ -113,19 +117,21 @@ const login = catchAsync(async (req, res, next) => {
 
     const options = {
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      httpOnly: true,
+      httpOnly: false,
+      secure: false,
     };
 
+    user.password = undefined;
     res.status(200).cookie("css_jwt_token", token, options).json({
-      success: true,
-      user,
-      token,
-      secure: false,
+      status: "success",
+      message: "user successfully signed in",
+      token: token,
+      user: user,
     });
   } else {
     res.status(401).json({
       status: "fail",
-      error: "Invalid Credentials",
+      error: "invalid credentials",
     });
   }
 });
@@ -133,8 +139,8 @@ const login = catchAsync(async (req, res, next) => {
 const logout = catchAsync(async (req, res, next) => {
   res.clearCookie("css_jwt_token");
   res.status(200).json({
-    success: true,
-    message: "Logged Out",
+    status: "success",
+    message: "user successfully logged out",
   });
 });
 

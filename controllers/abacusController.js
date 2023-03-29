@@ -168,7 +168,11 @@ exports.createAbacusEvent = catchAsync(async (req, res, next) => {
     },
   }).save();
 
-  return res.status(200).json({ status: "success", message: "Event Succesfully Created", event: event });
+  return res.status(200).json({
+    status: "success",
+    message: "Event Succesfully Created",
+    event: event,
+  });
 });
 
 exports.updateAbacusEvent = catchAsync(async (req, res, next) => {
@@ -215,7 +219,11 @@ exports.updateAbacusEvent = catchAsync(async (req, res, next) => {
   Object.assign(event, updatedEvent);
   await event.save();
 
-  res.status(200).json({ status: "success", message: "event successfully updated", event: updatedEvent });
+  res.status(200).json({
+    status: "success",
+    message: "event successfully updated",
+    event: updatedEvent,
+  });
 });
 
 exports.deleteAbacusEvent = catchAsync(async (req, res, next) => {
