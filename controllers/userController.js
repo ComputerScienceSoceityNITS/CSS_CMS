@@ -161,8 +161,7 @@ const updateProfile = catchAsync(async (req, res, next) => {
 });
 
 const authenticate = catchAsync(async (req, _res, next) => {
-  const token = getCookie("css_jwt_token", req.headers.cookie);
-
+  const token = req.cookies?.css_jwt_token;
   if (!token) {
     return next(new AppError("No auth token found...try logging in again."));
   }

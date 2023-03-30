@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     validate: {
       validator: validateEmail,
-      message: "please enter a valid email",
+      message: "please enter a valid email [must be insitute email id]",
     },
   },
   scholarID: {
