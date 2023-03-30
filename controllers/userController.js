@@ -118,7 +118,8 @@ const login = catchAsync(async (req, res, next) => {
     const options = {
       maxAge: 1000 * 60 * 60 * 24 * 7,
       httpOnly: false,
-      secure: false,
+      secure: true,
+      sameSite: "None",
     };
 
     user.password = undefined;
