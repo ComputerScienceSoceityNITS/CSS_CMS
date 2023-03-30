@@ -1,7 +1,8 @@
 const { isEmail, isInt, isDate, isTime, isURL } = require("validator");
 
 exports.validateEmail = function (email) {
-  return isEmail(email);
+  const instituteEmailRegex = /^[^@\s\.]+@[A-Za-z]+\.(nits\.ac\.in)$/;
+  return isEmail(email) && instituteEmailRegex.test(email.toLowerCase());
 };
 
 exports.validateScholarID = function (scholarID) {

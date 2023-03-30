@@ -104,7 +104,7 @@ exports.deleteEnigma = catchAsync(async (req, res, next) => {
   await enigma.remove();
 
   res.status(200).json({
-    success: true,
-    message: "Enigma deleted",
+    status: "success",
+    message: "enigma deleted",
   });
 });

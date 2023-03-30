@@ -2,6 +2,7 @@ const User = require("../models/users");
 const Crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { catchAsync, AppError } = require("../utils/errorHandler");
+const { getCookie } = require("../utils/getCookie");
 
 const getUser = (req, res) => {
   try {
@@ -82,15 +83,19 @@ const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    res.status(401).json({ error: "Please Fill in All the Details!!!" });
-    return;
+    return res.status(401).json({
+      status: "fail",
+      error: "please fill in all the required details",
+    });
   }
 
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    res.status(401).json({ error: "No Such User!!!" });
-    return;
+    return res.status(401).json({
+      status: "fail",
+      message: "user not found",
+    });
   }
 
   const hashedPassword = user.password;
@@ -112,19 +117,21 @@ const login = catchAsync(async (req, res, next) => {
 
     const options = {
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      httpOnly: true,
+      httpOnly: false,
+      secure: false,
     };
 
+    user.password = undefined;
     res.status(200).cookie("css_jwt_token", token, options).json({
-      success: true,
-      user,
-      token,
-      secure: false,
+      status: "success",
+      message: "user successfully signed in",
+      token: token,
+      user: user,
     });
   } else {
     res.status(401).json({
       status: "fail",
-      error: "Invalid Credentials",
+      error: "invalid credentials",
     });
   }
 });
@@ -132,40 +139,38 @@ const login = catchAsync(async (req, res, next) => {
 const logout = catchAsync(async (req, res, next) => {
   res.clearCookie("css_jwt_token");
   res.status(200).json({
-    success: true,
-    message: "Logged Out",
+    status: "success",
+    message: "user successfully logged out",
   });
 });
 
 const updateProfile = catchAsync(async (req, res, next) => {
-
-  const {name, email, scholarID, codeforcesHandle, githubHandle} = req.body;
+  const { name, email, scholarID, codeforcesHandle, githubHandle } = req.body;
   const updatedData = {
-    name :  name || req.user.name,
-    email : email || req.user.email,
-    scholarID : scholarID || req.user.scholarID,
-    codeforcesHandle : codeforcesHandle || req.user.codeforcesHandle,
-    githubHandle : githubHandle || req.user.githubHandle
-  } 
-  
+    name: name || req.user.name,
+    email: email || req.user.email,
+    scholarID: scholarID || req.user.scholarID,
+    codeforcesHandle: codeforcesHandle || req.user.codeforcesHandle,
+    githubHandle: githubHandle || req.user.githubHandle,
+  };
+
   const updatedUser = req.user;
   Object.assign(updatedUser, updatedData);
   await updatedUser.save();
   next();
-  
 });
 
 const authenticate = catchAsync(async (req, _res, next) => {
-  if (!req.headers.cookie) {
-    return next(new AppError("No cookie found...try logging in again."));
+  const token = req.cookies?.css_jwt_token;
+  if (!token) {
+    return next(new AppError("No auth token found...try logging in again."));
   }
 
-  const token = req.headers.cookie.split("=")[1];
   const email = await jwt.verify(token, process.env.JWT_SECRET);
   const user = await User.findOne({ email: email.email });
 
   req.user = user;
-  next(); 
+  next();
 });
 
 module.exports = { signUp, login, logout, authenticate, getUser, updateProfile };
