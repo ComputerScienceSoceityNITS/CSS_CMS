@@ -2,7 +2,7 @@ const Abacus = require("../models/abacus");
 const Team = require("../models/teamModel");
 const User = require("../models/users");
 const cloudinary = require("cloudinary");
-const { catchAsync } = require("../utils/errorHandler");
+const { catchAsync, AppError } = require("../utils/errorHandler");
 
 exports.getAllAbacusEvents = catchAsync(async (req, res, next) => {
   const abacusEvents = await Abacus.find().populate({
@@ -115,6 +115,50 @@ exports.register = catchAsync(async (req, res, next) => {
     status: "success",
     message: "team successfully created",
     team: createdTeam,
+  });
+});
+
+exports.unregister = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  const event = await Abacus.findById(req.params.event_id).populate("teams");
+
+  if (!event) {
+    return next(new AppError("No event found with the provided id", 404));
+  }
+
+  const teams = event.teams;
+  let teamToBeDeleted = null;
+  // find out which team the user belonged to
+  for (let team of teams) {
+    if (team.teamLeader.equals(user._id) || team.members.includes(user._id)) {
+      teamToBeDeleted = await team.populate(["teamLeader", "members"]);
+      break;
+    }
+  }
+
+  // find out all the members of the team
+  const teamMembers = [...teamToBeDeleted.members, teamToBeDeleted.teamLeader];
+  const teamMemberScholarIDs = teamMembers.map((member) => member.scholarID);
+
+  // remove the scholar IDs of the members from the `participants` array of the event
+  event.participants = event.participants.filter((p) => !teamMemberScholarIDs.includes(p));
+  await event.save();
+
+  // remove the event id from the member's `registeredAbacusEvents` arrays
+  await Promise.all(
+    teamMembers.map((member) => {
+      member.registeredAbacusEvents = member.registeredAbacusEvents.filter((id) => !id.equals(event._id));
+      return member.save({ validateBeforeSave: false });
+    })
+  );
+
+  // delete the team
+  await teamToBeDeleted.delete();
+
+  return res.status(200).json({
+    status: "success",
+    message: "unregistered successfully",
+    team: teamToBeDeleted,
   });
 });
 
