@@ -2,6 +2,7 @@ const User = require("../models/users");
 const Crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { catchAsync, AppError } = require("../utils/errorHandler");
+const sendEmail = require("../utils/email");
 const { getCookie } = require("../utils/getCookie");
 
 const getUser = (req, res) => {
@@ -145,8 +146,42 @@ const logout = catchAsync(async (req, res, next) => {
   });
 });
 
+const resetPassword = catchAsync(async (req, res, next) => {
+  const email = req.body.email;
+  if (!email) {
+    return next(new AppError("Email id field cannot be empty", 400));
+  }
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    return next(new AppError("No user with the given email id found", 404));
+  }
+  const newPassword = Crypto.randomBytes(4).toString("hex");
+  const hashedPassword = generateHash(newPassword);
+  user.password = hashedPassword;
+
+  const message = `Your password for nitscss.live has been updated. Your new password is ${newPassword}.`;
+
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: "Nitscss.live Password Reset",
+      message: message,
+    });
+  } catch (err) {
+    console.log({ err });
+    return next(new AppError("Password reset failed", 500));
+  }
+
+  await user.save();
+  return res.status(200).json({
+    status: "success",
+    message: "New password sent to registered email id",
+  });
+});
+
 const updateProfile = catchAsync(async (req, res, next) => {
-  const { name, email, scholarID, codeforcesHandle, githubHandle } = req.body;
+  const { name, email, scholarID, codeforcesHandle, githubHandle, password } = req.body;
+
   const updatedData = {
     name: name || req.user.name,
     email: email || req.user.email,
@@ -155,10 +190,19 @@ const updateProfile = catchAsync(async (req, res, next) => {
     githubHandle: githubHandle || req.user.githubHandle,
   };
 
+  if (password) {
+    const hashedPassword = generateHash(password);
+    updatedData.password = hashedPassword;
+  }
+
   const updatedUser = req.user;
   Object.assign(updatedUser, updatedData);
   await updatedUser.save();
-  next();
+
+  return res.status(200).json({
+    status: "success",
+    message: "profile updated successfully",
+  });
 });
 
 const authenticate = catchAsync(async (req, _res, next) => {
@@ -174,4 +218,4 @@ const authenticate = catchAsync(async (req, _res, next) => {
   next();
 });
 
-module.exports = { signUp, login, logout, authenticate, getUser, updateProfile };
+module.exports = { signUp, login, logout, authenticate, getUser, updateProfile, resetPassword };
