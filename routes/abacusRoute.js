@@ -7,6 +7,7 @@ const {
   updateAbacusEvent,
   getAllAbacusEvents,
   deleteAbacusEvent,
+  unregister,
 } = require("../controllers/abacusController");
 const { isAdmin } = require("../controllers/admin");
 const { authenticate } = require("../controllers/userController");
@@ -16,6 +17,7 @@ router.get("/", getAllAbacusEvents);
 
 // registered user routes
 router.post("/register/:event_id", authenticate, register);
+router.post("/unregister/:event_id", authenticate, unregister);
 
 // admin only routes
 router.post("/", isAdmin, createAbacusEvent);
