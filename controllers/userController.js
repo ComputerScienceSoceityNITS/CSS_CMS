@@ -180,7 +180,8 @@ const resetPassword = catchAsync(async (req, res, next) => {
 });
 
 const updateProfile = catchAsync(async (req, res, next) => {
-  const { name, email, scholarID, codeforcesHandle, githubHandle } = req.body;
+  const { name, email, scholarID, codeforcesHandle, githubHandle, password } = req.body;
+
   const updatedData = {
     name: name || req.user.name,
     email: email || req.user.email,
@@ -188,6 +189,11 @@ const updateProfile = catchAsync(async (req, res, next) => {
     codeforcesHandle: codeforcesHandle || req.user.codeforcesHandle,
     githubHandle: githubHandle || req.user.githubHandle,
   };
+
+  if (password) {
+    const hashedPassword = generateHash(password);
+    updatedData.password = hashedPassword;
+  }
 
   const updatedUser = req.user;
   Object.assign(updatedUser, updatedData);
