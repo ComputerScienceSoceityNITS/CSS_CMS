@@ -119,7 +119,7 @@ const login = catchAsync(async (req, res, next) => {
     const options = {
       maxAge: 1000 * 60 * 60 * 24 * 7,
       httpOnly: true,
-      // secure: true,
+      secure: true,
       sameSite: "None",
     };
 
@@ -198,7 +198,11 @@ const updateProfile = catchAsync(async (req, res, next) => {
   const updatedUser = req.user;
   Object.assign(updatedUser, updatedData);
   await updatedUser.save();
-  next();
+
+  return res.status(200).json({
+    status: "success",
+    message: "profile updated successfully",
+  });
 });
 
 const authenticate = catchAsync(async (req, _res, next) => {
