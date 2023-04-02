@@ -6,7 +6,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    lowercase: true,
   },
   email: {
     type: String,
@@ -37,12 +36,10 @@ const userSchema = new mongoose.Schema({
   codeforcesHandle: {
     type: String,
     trim: true,
-    lowercase: true,
   },
   githubHandle: {
     type: String,
     trim: true,
-    lowercase: true,
   },
   registeredAbacusEvents: {
     type: [mongoose.Schema.Types.ObjectId],

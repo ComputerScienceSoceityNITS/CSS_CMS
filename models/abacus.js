@@ -12,7 +12,6 @@ const abacusSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    lowercase: true,
   },
   description: {
     type: String,
@@ -54,7 +53,6 @@ const abacusSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-    lowercase: true,
   },
   participants: {
     type: [String],
