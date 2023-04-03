@@ -84,16 +84,16 @@ const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(401).json({
+    return res.status(400).json({
       status: "fail",
-      error: "please fill in all the required details",
+      message: "please fill in all the required details",
     });
   }
 
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    return res.status(401).json({
+    return res.status(400).json({
       status: "fail",
       message: "user not found",
     });
@@ -120,7 +120,7 @@ const login = catchAsync(async (req, res, next) => {
       maxAge: 1000 * 60 * 60 * 24 * 7,
       httpOnly: true,
       secure: true,
-      sameSite: "None",
+      sameSite: "none",
     };
 
     user.password = undefined;
@@ -131,9 +131,9 @@ const login = catchAsync(async (req, res, next) => {
       user: user,
     });
   } else {
-    res.status(401).json({
+    res.status(400).json({
       status: "fail",
-      error: "invalid credentials",
+      message: "invalid credentials",
     });
   }
 });
@@ -208,7 +208,7 @@ const updateProfile = catchAsync(async (req, res, next) => {
 const authenticate = catchAsync(async (req, _res, next) => {
   const token = req.cookies?.css_jwt_token;
   if (!token) {
-    return next(new AppError("No auth token found...try logging in again."));
+    return next(new AppError("No auth token found...check if third party cookies are allowed in site settings.", 401));
   }
 
   const email = await jwt.verify(token, process.env.JWT_SECRET);
