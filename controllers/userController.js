@@ -118,6 +118,7 @@ const login = catchAsync(async (req, res, next) => {
 
     const options = {
       maxAge: 1000 * 60 * 60 * 24 * 7,
+      domain: "css-cms.onrender.com",
       httpOnly: true,
       secure: true,
       sameSite: "none",
