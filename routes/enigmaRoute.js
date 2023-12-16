@@ -20,7 +20,7 @@ router.post("/register/:enigma_id", authenticate, register);
 
 // protected routes
 router.post("/", createEnigma);
-router.patch("/:enigma_id", isAdmin, updateEnigma);
+router.patch("/:enigma_id", isAdmin,  updateEnigma);
 router.delete("/:enigma_id", isAdmin, deleteEnigma);
 
 module.exports = router;

@@ -40,7 +40,7 @@
   },
   "homepage": "https://github.com/azad-ali786/CSS_CMS#readme",
   "devDependencies": {
-    "nodemon": "^2.0.20",
+    "nodemon": "^2.0.22",
     "prettier": "^2.8.4"
   }
 }
