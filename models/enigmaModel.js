@@ -23,19 +23,6 @@ const enigmaSchema = new mongoose.Schema({
       message: "invalid start time",
     },
   },
-  durationInHrs: {
-    type: Number,
-    required: true,
-    default: 3,
-  },
-  questionSetters: {
-    type: [String],
-    default: [],
-  },
-  questionTesters: {
-    type: [String],
-    default: [],
-  },
   participants: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: "User",

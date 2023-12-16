@@ -53,9 +53,9 @@ exports.getAllEnigmas = catchAsync(async (req, res, next) => {
 });
 
 exports.createEnigma = catchAsync(async (req, res, next) => {
-  const { cfContestLink, startDate, startTime, durationInHrs, questionSetters, questionTesters } = req.body;
+const { cfContestLink, startDate, startTime } = req.body;
 
-  if (!(cfContestLink && startDate && startTime && durationInHrs)) {
+  if (!(cfContestLink && startDate && startTime )) {
     return res.status(400).json({
       status: "fail",
       message: "Please provide all the details",
@@ -65,10 +65,8 @@ exports.createEnigma = catchAsync(async (req, res, next) => {
   const enigma = await Enigma({
     cfContestLink,
     startDate,
-    startTime,
-    durationInHrs,
-    questionSetters,
-    questionTesters,
+    startTime 
+    
   }).save();
 
   res.status(201).json({
