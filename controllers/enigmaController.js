@@ -65,8 +65,7 @@ const { cfContestLink, startDate, startTime } = req.body;
   const enigma = await Enigma({
     cfContestLink,
     startDate,
-    startTime 
-    
+    startTime,
   }).save();
 
   res.status(201).json({
