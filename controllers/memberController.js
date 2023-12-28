@@ -130,7 +130,7 @@ exports.getMembers = catchAsync(async (req, res, next) => {
   const prWing = members.filter((ele) => {
     return ele.role === "PR-Wing";
   });
-  const Heads = members.filter((ele) => {
+  const coHeads = members.filter((ele) => {
     return regex1.test(ele.role);
   });
 
@@ -143,7 +143,7 @@ exports.getMembers = catchAsync(async (req, res, next) => {
     designWing,
     literaryWing,
     prWing,
-    Heads,
+    coHeads,
     members,
   });
 });
