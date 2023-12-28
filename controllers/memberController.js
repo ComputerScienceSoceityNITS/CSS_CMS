@@ -100,7 +100,7 @@ exports.deleteMember = catchAsync(async (req, res, next) => {
 
 //get Members
 exports.getMembers = catchAsync(async (req, res, next) => {
-  const regex1 = /Co-Head/;
+  const regex1 = /Head/;
   let members = await Member.find({ session: req.params.session });
 
   if (req.query.year !== undefined) {
@@ -127,6 +127,9 @@ exports.getMembers = catchAsync(async (req, res, next) => {
   const literaryWing = members.filter((ele) => {
     return ele.role === "Literary-Wing";
   });
+  const prWing = members.filter((ele) => {
+    return ele.role === "PR-Wing";
+  });
   const coHeads = members.filter((ele) => {
     return regex1.test(ele.role);
   });
@@ -139,6 +142,7 @@ exports.getMembers = catchAsync(async (req, res, next) => {
     mlWing,
     designWing,
     literaryWing,
+    prWing,
     coHeads,
     members,
   });
