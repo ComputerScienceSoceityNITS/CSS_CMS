@@ -61,10 +61,12 @@ app.use("/api/admin", admin);
 const userRoute = require("./routes/userRoutes.js");
 const abacusRoute = require("./routes/abacusRoute.js");
 const enigmaRoute = require("./routes/enigmaRoute");
+const galleryRoute = require("./routes/galleryRoute.js")
 
 app.use("/api/admin/user", userRoute);
 app.use("/api/admin/abacus", abacusRoute);
 app.use("/api/admin/enigma", enigmaRoute);
+app.use("/api/admin/gallery", galleryRoute);
 
 app.all("*", (req, res, next) => {
   res.status(404).json({
